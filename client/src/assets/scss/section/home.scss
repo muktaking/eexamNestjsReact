@@ -1,0 +1,107 @@
+.landing {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: table;
+    z-index: -1;
+}
+
+.home-wrap {
+    clip: rect(0, auto, auto, 0);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.home-inner {
+    position: fixed;
+    display: table;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center center;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform;
+    background-image: $homeBgImg;
+}
+
+//landing page Navbar
+.navbar {
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.1rem;
+    background: $homeNavbarBgColor !important;
+}
+
+.navbar .navbar-nav .nav-item.active {
+    padding: 0.2rem 0.4rem;
+    background-color: $primaryColor;
+}
+
+.navbar .navbar-nav .nav-item.active .nav-link:hover {
+    color: $primaryColorContrast;
+}
+
+.navbar .navbar-nav .nav-item .nav-link {
+    color: $primaryColorContrast;
+    padding-top: 0.2rem;
+}
+
+.navbar .navbar-nav .nav-item .nav-link.active,
+.navbar .navbar-nav .nav-item .nav-link:hover {
+    color: $primaryColor;
+}
+
+/* Home Inside */
+
+.caption {
+    @include caption;
+    top: 38%;
+}
+
+.caption h1 {
+    font-size: 3.8rem;
+    font-weight: 700;
+    letter-spacing: 0.3rem;
+    text-shadow: 0.1rem 0.1rem 0.8rem black;
+    padding-bottom: 1rem;
+}
+
+.caption h3 {
+    font-size: 2rem;
+    text-shadow: 0.1rem 0.1rem 0.5rem black;
+    padding-bottom: 1.6rem;
+}
+
+.btn-lg {
+    border-width: medium;
+    border-radius: 0;
+    padding: 0.6rem 1.3rem;
+    font-size: 1.1rem;
+}
+
+//scrollToTop is placed in navbar
+.scrollToTop {
+    width: 50px;
+    height: 50px;
+    background-color: $primaryColor;
+    color: $primaryColorContrast;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    border-radius: 50%;
+    box-shadow: 2px 2px 5px #515151
+}
+
+.scrollToTop svg.svg-inline--fa {
+    height: 100%;
+    display: block;
+    margin: auto auto;
+}

@@ -1,0 +1,18 @@
+// importing headers file;
+
+@import './headers/variables';
+
+@import './headers/media';
+
+
+//section file imported
+
+.__landing__upper {
+    @import './headers/_fixed';
+    @import './section/home';
+    @import './section/exam';
+    @import './section/feature';
+    @import './section/demo';
+    @import './section/clients';
+    @import './section/contact';
+}

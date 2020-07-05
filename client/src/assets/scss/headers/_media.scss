@@ -1,0 +1,27 @@
+@media (max-width: 767px) {
+    .caption h1 {
+        font-size: 2.3rem;
+        letter-spacing: 0.15rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .caption h3 {
+        font-size: 1.2rem;
+        padding-bottom: 1.2rem;
+    }
+
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1 rem;
+    }
+
+    .narrow h1 {
+        font-size: 1.5rem;
+    }
+
+    .clients img {
+        max-width: 50%;
+        display: block;
+        margin: 0 50%;
+    }
+}

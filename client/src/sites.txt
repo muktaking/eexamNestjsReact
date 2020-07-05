@@ -1,0 +1,9 @@
+pages:
+landing
+login/signup
+user - profile
+dashboard - miniinfo, 
+category - create,update,delete
+exam - create, update, delete, participate
+question - create, update, delete
+courses - 

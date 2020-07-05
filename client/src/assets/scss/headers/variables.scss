@@ -1,0 +1,33 @@
+$homeBgImg:url(../../image/computers.png);
+$demoBgImg:url(../../image/apple.png);
+$dbSidebarBgImg:url(../../image/img1.jpeg);
+$dbAvatar:url(../../image/admin.jpeg);
+$landingClientImg1:url(../../image/client1.png);
+
+$primaryColor:#1ebba3;
+$primaryColorContrast: white;
+$primaryColorDarkish:#37766d;
+$homeNavbarBgColor: rgba(0, 0, 0, 0.6);
+$hrSocketColor:#666b71;
+$footerBgColor:#40474e;
+$footerColor:white;
+
+
+//declearing mixin
+
+//caption mixin: style for home content
+
+@mixin caption {
+    width: 100%;
+    max-width: 100%;
+    position: absolute;
+    z-index: 1;
+    color: $primaryColorContrast;
+}
+
+@mixin headingUnderline {
+    width: 3rem;
+    height: 0.2rem;
+    background-color: $primaryColor;
+    margin: 0 auto 2rem;
+}

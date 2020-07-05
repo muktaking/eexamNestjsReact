@@ -1,0 +1,30 @@
+footer {
+    background-color: $footerBgColor;
+    color: $footerColor;
+    padding: 2rem 0;
+    margin-top: 1rem;
+}
+
+footer img {
+    height: 3rem;
+    margin: 1.5rem 0;
+}
+
+footer a {
+    color: white;
+}
+
+footer svg.svg-inline--fa {
+    font-size: 1.6rem;
+    margin: 1.2rem 0.5rem 0 0;
+}
+
+footer svg.svg-inline--fa:hover {
+    color: $primaryColor !important;
+}
+
+hr.socket {
+    width: 100%;
+    border-top: 0.2rem solid $hrSocketColor;
+    margin-top: 3rem;
+}

@@ -1,0 +1,60 @@
+@import "../headers/variables";
+
+.registration {
+  @import "../headers/_fixed";
+  @import "./home";
+
+  .caption {
+    @include caption;
+    width: 60%;
+    max-width: 40%;
+    top: 15%;
+    right: 10%;
+    background-color: rgba(0, 0, 0, 0.45);
+    padding: 1.5rem 0.7rem;
+    border-radius: 0%;
+    box-shadow: 0.1rem 0.1rem 0.8rem black;
+  }
+
+  .caption .btn-submit {
+    background-color: $primaryColor;
+    border-color: $primaryColor;
+  }
+
+  .caption .btn-submit:hover {
+    background-color: $primaryColorDarkish;
+    border: 0rem;
+  }
+
+  .heading-underline {
+    @include headingUnderline;
+  }
+
+  .errorMessage {
+    color: rgb(255, 153, 94);
+  }
+
+  .errorInput {
+    box-shadow: 0 0 3px #cc0000;
+    //margin: 10px;
+  }
+
+  @media (max-width: 991px) {
+    .caption {
+      min-width: 60%;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .caption {
+      min-width: 80%;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .caption {
+      left: 5%;
+      min-width: 90%;
+    }
+  }
+}

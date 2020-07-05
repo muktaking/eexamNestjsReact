@@ -1,0 +1,25 @@
+import { TasksService } from "./tasks.service";
+import * as mongoose from "mongoose";
+
+export const TaskSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  status: {
+    type: String,
+    enum: ["OPEN", "IN_PROGRESS", "DONE"],
+    required: true
+  }
+});
+
+export interface Task extends mongoose.Document {
+  id: string;
+  title: string;
+  description: string;
+  status: TaskStatus;
+}
+
+export enum TaskStatus {
+  OPEN = "OPEN",
+  IN_PROGRESS = "IN_PROGRESS",
+  DONE = "DONE"
+}
