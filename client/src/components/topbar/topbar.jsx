@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { NavLink, withRouter } from "react-router-dom";
 import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -46,18 +46,22 @@ const topbar = (props) => {
             </Nav.Item>
             <Nav.Item
               className="ml-md-auto"
-              onClick={() => {
-                props.onlogoutLoader();
-                props.history.push({ pathname: "/" });
-              }}
+              // onClick={() => {
+              //   props.onlogoutLoader();
+              //   props.history.push({ pathname: "/" });
+              // }}
             >
-              <Nav.Link data-toggle="modal" data-target="#sign-out">
+              <NavLink
+                // href={"/" + value}
+                to={{ pathname: "/logout" }}
+                className="nav-link"
+              >
                 <FontAwesomeIcon
                   icon="sign-out-alt"
                   size="lg"
                   className="text-danger"
                 />
-              </Nav.Link>
+              </NavLink>
             </Nav.Item>
           </Nav>
         </Col>
@@ -66,11 +70,11 @@ const topbar = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onlogoutLoader: () => dispatch(logoutLoader()),
-  };
-};
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     onlogoutLoader: () => dispatch(logoutLoader()),
+//   };
+// };
 
 // const mapStateToProps = (state) => {
 //   return {
@@ -78,4 +82,5 @@ const mapDispatchToProps = (dispatch) => {
 //   };
 // };
 
-export default connect(null, mapDispatchToProps)(withRouter(topbar));
+//export default connect(null, n)(withRouter(topbar));
+export default topbar;

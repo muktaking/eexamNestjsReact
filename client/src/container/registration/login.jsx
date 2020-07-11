@@ -10,7 +10,7 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
 import NavbarHome from "../../components/navbar/navbarHome";
-import { auth } from "../../store/auth";
+import { auth, autoAuth } from "../../store/auth";
 import setAuthorizationToken from "../../utils/setAuthorizationToken";
 
 import "../../assets/scss/section/registration.scss";
@@ -35,32 +35,22 @@ class Home extends Component {
       username: "",
       password: "",
     },
+    errorMessage: null,
   };
 
   submitHandler = (e) => {
     e.preventDefault();
     const { username, password, formErrors } = this.state;
 
+    this.setState({ errorMessage: null });
+
     if (isValid(formErrors)) {
       this.props.onAuth(username, password);
-      //if(this.props.auth.token !== null){}
-      //this.props.history.push({ pathname: "/dashboard" });
-      // const token = localStorage.getItem("jwtToken"); //this.props.auth.token;
-      // setAuthorizationToken(token);
-      // axios
-      //   .post("http://localhost:4000/auth/login", {
-      //     username,
-      //     password,
-      //   })
-      //   .then((data) => {
-      //     //console.log(data.data.accessToken);
-      //     this.props.history.push({ pathname: "/dashboard" });
-      //     localStorage.setItem("jwtToken", data.data.accessToken);
-      //     setAuthorizationToken(data.data.accessToken);
-      //   })
-      //   .catch((error) => console.log(error.response));
     } else {
-      console.log("login failed");
+      this.setState({
+        errorMessage:
+          "Login Failed. Server may be down. please try sometime later",
+      });
     }
   };
 
@@ -69,11 +59,14 @@ class Home extends Component {
     const { name, value } = e.target;
     let formErrors = this.state.formErrors;
 
+    this.setState({ errorMessage: null });
+
     switch (name) {
       case "username":
-        formErrors.username = !validator.isEmpty(value)
-          ? ""
-          : "Email should not be empty";
+        formErrors.username =
+          !validator.isEmpty(value) && validator.isEmail(value)
+            ? ""
+            : "Email should not be empty && must be valid";
         break;
       case "password":
         formErrors.password = !validator.isEmpty(value)
@@ -86,19 +79,19 @@ class Home extends Component {
       [name]: value,
     });
   };
-
+  componentDidMount() {
+    //this.props.onAutoAuth();
+  }
   render() {
     const { formErrors } = this.state;
 
-    let authRedirect;
-    if (this.props.isAuthenticated) {
-      //const token = localStorage.getItem("jwtToken");
-      //setAuthorizationToken(token);
-      authRedirect = <Redirect to="/dashboard" />;
-    }
+    // let authRedirect;
+    // if (this.props.isAuthenticated) {
+    //   authRedirect = <Redirect to="/dashboard" />;
+    // }
     return (
       <div className="registration">
-        {authRedirect}
+        {/* {authRedirect} */}
         <NavbarHome isLanding={false} />
         {/* Landing */}
         <div className="landing">
@@ -109,15 +102,28 @@ class Home extends Component {
         <div className="caption text-center" style={{ top: "15%" }}>
           {/* <Spinner animation="border" role="status"></Spinner> */}
           <h1>Login Form</h1>
+          {this.props.auth.loading && (
+            <Spinner
+              animation="border"
+              role="status"
+              variant="light"
+              className="mr-2"
+            ></Spinner>
+          )}
           <div className="heading-underline"></div>
-          <Form className="mb-4" onSubmit={this.submitHandler}>
+          <Form className="mb-4" onSubmit={this.submitHandler} novalidate>
+            <div className="text-white mb-2 bg-danger">
+              {this.props.auth.error &&
+                this.props.auth.error.response.statusText}
+            </div>
             <Form.Group as={Col} controlId="formGridEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="Enter email"
-                name="username"
+                name="username" // do not be confused; due to passportjs use only "username" for password verification though it is actually the user email
                 onChange={this.handleChange}
+                className={formErrors.username.length > 0 && "is-invalid"}
               />
               {formErrors.username.length > 0 && (
                 <span className="errorMessage">{formErrors.username}</span>
@@ -130,6 +136,7 @@ class Home extends Component {
                 placeholder="Password"
                 name="password"
                 onChange={this.handleChange}
+                className={formErrors.password.length > 0 && "is-invalid"}
               />
               {formErrors.password.length > 0 && (
                 <span className="errorMessage">{formErrors.password}</span>
@@ -139,9 +146,7 @@ class Home extends Component {
               Submit
             </Button>
           </Form>
-          <Row>
-            {this.props.auth.error && this.props.auth.error.response.statusText}
-          </Row>
+          <Row></Row>
           <Row>
             <Col md={6}>
               <p className="lead">Forget Your Password</p>
@@ -165,6 +170,9 @@ class Home extends Component {
 const mapDispatchToProps = (dispatch) => {
   return {
     onAuth: (username, password) => dispatch(auth(username, password)),
+    onAutoAuth: () => {
+      dispatch(autoAuth());
+    },
   };
 };
 

@@ -7,6 +7,7 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import NavbarHome from "../../components/navbar/navbarHome";
+import Spinner from "react-bootstrap/Spinner";
 
 import "../../assets/scss/section/registration.scss";
 
@@ -29,6 +30,7 @@ class SignUp extends Component {
     this.passwordRef = React.createRef();
 
     this.state = {
+      loading: false,
       firstName: null,
       lastName: null,
       userName: null,
@@ -51,6 +53,8 @@ class SignUp extends Component {
   handleChange = (e) => {
     const { name, value } = e.target;
     let formErrors = this.state.formErrors;
+
+    this.setState({ errorMessage: null });
 
     switch (name) {
       case "firstName":
@@ -81,7 +85,7 @@ class SignUp extends Component {
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/
         )
           ? ""
-          : "Password should be minimum 8 characters and contain one alpha,neumeric and special value";
+          : "Password should be minimum 8 characters and contain atleast one capital and lowercase alpha, neumeric and special value";
         break;
       case "repeatPassword":
         formErrors.repeatPassword = validator.equals(
@@ -109,6 +113,7 @@ class SignUp extends Component {
 
   submitHandler = (e) => {
     e.preventDefault();
+    this.setState({ errorMessage: null });
     const {
       firstName,
       lastName,
@@ -119,6 +124,7 @@ class SignUp extends Component {
       gender,
       formErrors,
     } = this.state;
+    this.setState({ loading: true });
 
     if (
       formValid({
@@ -143,37 +149,59 @@ class SignUp extends Component {
           gender,
         })
         .then((res) => {
-          console.log(res);
+          this.setState({ loading: false });
           if (res.status === 201) {
             // <Route exact path="/">
             this.props.history.push({ pathname: "/login" });
             // </Route>;
           }
         })
+
         .catch((e) => {
-          console.log("/b/b onError:  ", e.response);
-          e = e.response;
-          if (e.data.statusCode === 409) {
+          this.setState({ loading: false });
+          //  console.log("/b/b onError:  ", e.response);
+          if (e.response) {
+            // if server has response
+            e = e.response;
+            if (e.data.statusCode === 409) {
+              // user duplication error, so redirecting to login page
+              this.setState({
+                errorMessage: e.data.message + " Redirecting .....",
+              });
+              setTimeout(() => {
+                this.props.history.push({ pathname: "/login" });
+              }, 3000);
+            } else if (e.data.statusCode === 400) {
+              // specific server validation error
+              let message = "";
+              e.data.message.forEach((v) => {
+                message += `${v.value} is not valid in [ ${
+                  v.property
+                } ] field due to " ${Object.values(
+                  v.constraints
+                ).toString()} "`;
+              });
+              //  console.log(message);
+              this.setState({
+                errorMessage: message,
+              });
+            } else {
+              // for any other server error response
+              this.props.history.push({ pathname: "/" });
+            }
+          } else {
+            // if server has no any response
             this.setState({
-              errorMessage: e.data.message + " Redirecting .....",
+              errorMessage: "Server may be down. Please try sometime later",
             });
-            setTimeout(() => {
-              this.props.history.push({ pathname: "/login" });
-            }, 3000);
-          } else if (e.data.statusCode === 400) {
-            let message = "";
-            e.data.message.forEach((v) => {
-              message += `${v.value} is not valid in [ ${
-                v.property
-              } ] field due to " ${Object.values(v.constraints).toString()} "`;
-            });
-            console.log(message);
-            this.setState({
-              errorMessage: message,
-            });
-          } else this.props.history.push({ pathname: "/" });
+          }
         });
-    } else console.log("Failed to submit");
+    } else {
+      this.setState({
+        loading: false,
+        errorMessage: "Please fill form correctly.",
+      });
+    }
   };
 
   render() {
@@ -189,6 +217,14 @@ class SignUp extends Component {
         </div>
         <div className="caption text-center">
           <h1>Registration Form</h1>
+          {this.state.loading && (
+            <Spinner
+              animation="border"
+              role="status"
+              variant="light"
+              className="mb-2"
+            ></Spinner>
+          )}
           <div className="heading-underline"></div>
 
           <Form onSubmit={this.submitHandler} novalidate>

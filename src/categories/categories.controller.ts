@@ -11,7 +11,7 @@ import {
   Req,
   Patch,
   Delete,
-  UseGuards
+  UseGuards,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -48,15 +48,16 @@ export class CategoriesController {
     FileInterceptor("image", {
       storage: diskStorage({
         destination: "./uploads/images",
-        filename: editFileName
+        filename: editFileName,
       }),
-      fileFilter: imageFileFilter
+      fileFilter: imageFileFilter,
     })
   )
   async createCategory(
     @Body() createCategoryDto: createCategoryDto,
     @UploadedFile() image
   ) {
+    console.log(createCategoryDto);
     if (!image) {
       throw new Error("Image is not Selected");
     }
@@ -73,9 +74,9 @@ export class CategoriesController {
     FileInterceptor("image", {
       storage: diskStorage({
         destination: "./uploads/images",
-        filename: editFileName
+        filename: editFileName,
       }),
-      fileFilter: imageFileFilter
+      fileFilter: imageFileFilter,
     })
   )
   async updateCategory(
@@ -93,7 +94,7 @@ export class CategoriesController {
   @Delete()
   @UseGuards(AuthGuard("jwt"))
   @UsePipes(ValidationPipe)
-  async deleteCategoryById(id: string) {
+  async deleteCategoryById(@Body("id") id: string) {
     return await this.categoriesService.deleteCategoryById(id);
   }
 }

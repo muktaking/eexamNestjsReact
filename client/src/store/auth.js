@@ -8,6 +8,7 @@ const slice = createSlice({
     loading: false,
     token: null,
     userId: null,
+    role: null,
     error: null,
   },
   reducers: {
@@ -18,6 +19,7 @@ const slice = createSlice({
       auth.loading = false;
       auth.token = action.payload.accessToken;
       auth.userId = action.payload.id;
+      auth.role = action.payload.role;
       auth.expireIn = action.payload.expireIn;
       auth.error = null;
     },
@@ -58,8 +60,46 @@ export const auth = (username, password) => (dispatch) => {
     })
   );
 };
+export const autoAuth = () => (dispatch) => {
+  const token = localStorage.getItem("jwtToken");
+  if (token) {
+    dispatch(
+      authSuccess({
+        token,
+      })
+    );
+  }
+};
+
+export const checkAuthTimeOut = (expirationTime) => (dispatch) => {
+  setTimeout(() => {
+    dispatch(logout());
+  }, expirationTime * 1000);
+};
+
+export const checkAuthState = () => (dispatch) => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token) {
+    dispatch(logout);
+  } else {
+    const expirationDate = new Date(localStorage.getItem("expirationDate"));
+    if (expirationDate > new Date()) {
+      const userId = localStorage.getItem("userId");
+      dispatch(authSuccess({ accessToken: token, id: userId }));
+      dispatch(
+        checkAuthTimeOut(
+          (expirationDate.getTime() - new Date().getTime()) / 1000
+        )
+      );
+    } else {
+      dispatch(logout());
+    }
+  }
+};
 
 export const logoutLoader = () => (dispatch) => {
+  localStorage.removeItem("expirationDate");
+  localStorage.removeItem("userId");
   localStorage.removeItem("jwtToken");
   dispatch(logout());
 };

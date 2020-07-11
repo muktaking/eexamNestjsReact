@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import axios from "axios";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
@@ -9,6 +10,7 @@ import { NavLink } from "react-router-dom";
 import avatorImg from "../../assets/image/admin.jpeg";
 
 import setAuthorizationToken from "../../utils/setAuthorizationToken";
+import { getUserLoader } from "../../store/user";
 
 class Sidebar extends Component {
   constructor(props) {
@@ -17,7 +19,7 @@ class Sidebar extends Component {
   classes = {
     sideNav: ["flex-column", "mt-4"].join(" "),
     sideNavLink: ["text-white", "p-3", "mb-2"].join(" "),
-    fa: ["text-light", "fa-lg", "mr-3"].join(" ")
+    fa: ["text-light", "fa-lg", "mr-3"].join(" "),
   };
 
   faIcons = [
@@ -29,7 +31,7 @@ class Sidebar extends Component {
     "chart-bar",
     "table",
     "wrench",
-    "file-alt"
+    "file-alt",
   ];
   menuName = [
     "Dashboard",
@@ -40,7 +42,7 @@ class Sidebar extends Component {
     "Charts",
     "Tables",
     "Settings",
-    "Documentation"
+    "Documentation",
   ];
   navLinks = [
     "/dashboard",
@@ -51,23 +53,16 @@ class Sidebar extends Component {
     "/api4",
     "/api5",
     "/api6",
-    "/api7"
+    "/api7",
   ];
-  state = {
-    userName: null
-  };
+  // state = {
+  //   userName: null
+  // };
   componentDidMount() {
-    setAuthorizationToken(localStorage.getItem("jwtToken"));
-    axios
-      .get("http://localhost:4000/users/")
-      .then(data =>
-        this.setState({
-          userName: data.data.userName
-        })
-      )
-      .catch(error => console.log(error));
+    this.props.onGetUserLoader();
   }
   render() {
+    const { userName, email, id, avatar } = this.props.user;
     return (
       <>
         <Navbar.Brand
@@ -76,15 +71,16 @@ class Sidebar extends Component {
         >
           React-Bootstrap
         </Navbar.Brand>
+        <h3 className="text-white text-center">Welcome Back</h3>
         <div class="bottom-border pb-3">
           <Image
-            src={avatorImg}
+            src={avatar}
             roundedCircle={true}
             style={{ width: "50px" }}
             className="mr-3"
           />
-          <a href="#" className="text-white">
-            {this.state.userName}
+          <a href="#" className="text-white ml-3">
+            {userName}
           </a>
         </div>
         <Nav className={this.classes.sideNav}>
@@ -112,4 +108,18 @@ class Sidebar extends Component {
   }
 }
 
-export default Sidebar;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onGetUserLoader: () => dispatch(getUserLoader()),
+  };
+};
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
+
+//export default Sidebar;

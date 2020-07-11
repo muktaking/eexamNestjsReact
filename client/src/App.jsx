@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import { BrowserRouter } from "react-router-dom";
-
+import { connect } from "react-redux";
 // import Navbar from "./components/layouts/layouts";
 // import Modal from "./components/modal/modal";
 import RoutePages from "./container/routePages";
+import { checkAuthState } from "./store/auth";
 
 class App extends Component {
   state = {
-    modalShow: false
+    modalShow: false,
   };
 
   modalShowHandler = () => {
@@ -16,6 +17,10 @@ class App extends Component {
   modalCloseHandler = () => {
     this.setState({ modalShow: false });
   };
+
+  componentDidMount() {
+    this.props.onTryAutologin();
+  }
   render() {
     return (
       <BrowserRouter>
@@ -31,4 +36,12 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onTryAutologin: () => {
+      dispatch(checkAuthState());
+    },
+  };
+};
+
+export default connect(null, mapDispatchToProps)(App);

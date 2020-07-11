@@ -1,7 +1,7 @@
 import {
   Injectable,
   InternalServerErrorException,
-  ConflictException
+  ConflictException,
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
@@ -24,14 +24,14 @@ export class CategoriesService {
   async findAllCategories() {
     const [err, categories] = await to(
       this.CategoryModel.find({}, { __v: 0 }).sort({
-        slug: 1
+        slug: 1,
       })
     ); // fetch categories with name property and sort by name in ascending order;
     if (err) throw new InternalServerErrorException();
     //function to storing category according to their hierarchy
     let catHierarchy: Array<any> = [];
     categories.forEach((element, index, arr) => {
-      let child = arr.filter(e => {
+      let child = arr.filter((e) => {
         return element._id.equals(e.parentId);
       }); //store child into parent
       if (child.length > 0) {
@@ -54,12 +54,13 @@ export class CategoriesService {
   async createCategory(categoryDto: createCategoryDto, image: any) {
     let { name, description, parentId, order } = categoryDto;
     name = firstltrCapRestLow(name);
+    order = +order;
     parentId = parentId === "Top" ? null : parentId;
     const imageUrl = image.filename;
 
     try {
       let [parent] = await this.CategoryModel.find({
-        _id: parentId
+        _id: parentId,
       });
 
       let slug = parentId ? parent.slug : "Top";
@@ -72,7 +73,7 @@ export class CategoriesService {
         description,
         parentId,
         order,
-        imageUrl
+        imageUrl,
       });
 
       let result = await category.save();
@@ -90,26 +91,30 @@ export class CategoriesService {
     name = firstltrCapRestLow(name);
     let newCategorySlug;
     parentId = parentId !== "Top" ? parentId : null;
-
     const [err, [oldCategory]] = await to(this.CategoryModel.find({ _id: id }));
-    if (!err) {
-      deleteImageFile(image.filename);
+    if (err) {
+      if (image) deleteImageFile(image.filename);
       throw new InternalServerErrorException();
     }
 
     if (!_.isEqual(oldCategory.parentId, parentId)) {
       const [duplicateCategory] = await this.CategoryModel.find({
         name: name,
-        parentId: parentId
+        parentId: parentId,
       });
       if (duplicateCategory) {
-        deleteImageFile(image.filename);
+        // duplicateCategory.description = description;
+        // duplicateCategory.order = order;
+        // if (image) duplicateCategory.imageUrl = image.filename;
+        // const [err, res] = await to(duplicateCategory.save());
+        if (image) deleteImageFile(image.filename);
+        //if (err)
         throw new ConflictException("Category by this name is already present");
       }
     }
 
     let childCategories = await this.CategoryModel.find({
-      $or: [{ _id: id }, { parentId: id }]
+      $or: [{ _id: id }, { parentId: id }],
     }).sort({ slug: 1 });
 
     let NewParentCategory;
@@ -117,7 +122,7 @@ export class CategoriesService {
       [NewParentCategory] = await this.CategoryModel.find({ _id: parentId });
     }
     if (childCategories) {
-      childCategories.forEach(element => {
+      childCategories.forEach((element) => {
         if (element._id.equals(id)) {
           element.name = name;
           element.description = description;
@@ -137,7 +142,7 @@ export class CategoriesService {
           newCategorySlug + element.slug.split(oldCategory.name)[1];
       });
       try {
-        childCategories.forEach(async element => {
+        childCategories.forEach(async (element) => {
           await element.save();
         });
 
@@ -152,16 +157,15 @@ export class CategoriesService {
 
   async deleteCategoryById(id: string) {
     const [err, [categoryToDelete]] = await to(
-      this.CategoryModel.findOne({ _id: id })
+      this.CategoryModel.find({ _id: id })
     );
-
     if (err) {
       throw new InternalServerErrorException();
     }
 
     if (categoryToDelete) {
       const childCategories = await this.CategoryModel.find({ parentId: id });
-      childCategories.forEach(async element => {
+      childCategories.forEach(async (element) => {
         element.parentId = categoryToDelete.parentId;
         element.slug = element.slug.replace(
           "_" + categoryToDelete.name + "_",

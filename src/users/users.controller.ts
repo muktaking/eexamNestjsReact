@@ -4,7 +4,7 @@ import {
   Param,
   UseGuards,
   Req,
-  UnauthorizedException
+  UnauthorizedException,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { AuthGuard } from "@nestjs/passport";
@@ -27,7 +27,7 @@ export class UsersController {
   @UseGuards(AuthGuard("jwt"))
   async getUserById(@Req() req): Promise<any> {
     //@Param("id") id: string
-    console.log(req.user.id);
+    //console.log(req.user.id);
     return await this.userService.findUserById(req.user.id);
   }
 }

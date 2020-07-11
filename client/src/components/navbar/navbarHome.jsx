@@ -7,23 +7,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link as LinkScroll, animateScroll as scroll } from "react-scroll";
 import { Route, Link, NavLink } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import Spinner from "react-bootstrap/Spinner";
+//import Spinner from "react-bootstrap/Spinner";
 //import "./navbarLanding.css";
 
 const navbarHome = (props) => {
   const items = ["home", "exam", "feature", "demo", "clients", "contact"];
-  const pages = ["dashboard", "signup", "login"];
+  const pages = props.isAuthenticated
+    ? ["dashboard", "logout"]
+    : ["signup", "login"];
 
   return (
     <Navbar bg="dark" variant="dark" fixed="top" expand="md">
-      {props.auth.loading && (
+      {/* {props.auth.loading && (
         <Spinner
           animation="border"
           role="status"
           variant="light"
           className="mr-2"
         ></Spinner>
-      )}
+      )} */}
       <Link to="/" className="navbar-brand">
         React-Bootstrap
       </Link>
@@ -89,7 +91,7 @@ const navbarHome = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    auth: state.auth,
+    isAuthenticated: state.auth.token !== null,
   };
 };
 

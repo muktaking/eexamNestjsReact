@@ -5,18 +5,21 @@ import {
   IsOptional,
   IsNotIn,
   MinLength,
-  IsMongoId
+  IsMongoId,
+  ValidateIf,
+  IsNumberString,
 } from "class-validator";
 
 export class createCategoryDto {
   @IsOptional()
+  @ValidateIf((o) => o.id !== "Top")
   @IsMongoId()
   id: string;
 
   @IsNotEmpty()
   @MaxLength(25)
   @IsString()
-  @IsNotIn(["_"])
+  @IsNotIn(["_", "/"])
   name: string;
 
   @MinLength(30)
@@ -24,9 +27,11 @@ export class createCategoryDto {
   @IsString()
   description: string;
 
-  @IsString()
+  @ValidateIf((o) => o.parentId !== "Top")
+  @IsMongoId()
   parentId: string;
 
   @IsOptional()
+  @IsNumberString()
   order: number;
 }

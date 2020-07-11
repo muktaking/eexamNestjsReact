@@ -1,0 +1,22 @@
+export default function errorHandler(e) {
+  if (e.response) {
+    // checking if server is down, no response will occur
+    const responseData = e.response.data;
+    if (responseData.statusCode === 400) {
+      // server validation error
+      let message = "";
+      responseData.message.forEach((v) => {
+        message += `${v.value} is not valid in [ ${
+          v.property
+        } ] field due to " ${Object.values(v.constraints).toString()} "`;
+      });
+      return message;
+    } else {
+      //for other errors
+      return responseData.message;
+    }
+  } else {
+    // if server has no any response
+    return "Server may be down. Please try sometime later";
+  }
+}

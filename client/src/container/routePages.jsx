@@ -1,29 +1,34 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 
 import Landing from "./landing/landing";
 import Signup from "./registration/signup";
 import Login from "./registration/login";
 import InnerContent from "./innerContent/innerContent";
+import NotFoundPage from "./404";
+import LogoutPage from "./logout";
 import { connect } from "react-redux";
 
 const RoutePages = (props) => {
   let routes = (
-    <switch>
+    <Switch>
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
       <Route path="/" exact component={Landing} />
-      <Route path="/login" exact component={Login} />
-      <Route path="/signup" exact component={Signup} />
-    </switch>
+      <Route component={NotFoundPage} />
+    </Switch>
   );
+
   if (props.isAuthenticated) {
     routes = (
-      <switch>
-        <Route path="/" exact component={Landing} />
-        <Route path="/login" exact component={Login} />
-        <Route path="/dashboard" exact component={InnerContent} />
-        <Route path="/category" exact component={InnerContent} />
+      <Switch>
+        <Route path="/dashboard" component={InnerContent} />
+        <Route path="/category" component={InnerContent} />
         <Route path="/category/:slug" component={InnerContent} />
-      </switch>
+        <Route path="/logout" component={LogoutPage} />
+        <Route path="/" exact component={Landing} />
+        <Redirect to="/dashboard" />
+      </Switch>
     );
   }
   return routes;
