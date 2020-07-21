@@ -5,12 +5,14 @@ import {
   IsString,
   MaxLength,
   IsEnum,
-  IsDate
+  IsDate,
+  ValidateIf,
 } from "class-validator";
 import { QType, Stem } from "./question.model";
 
 export class CreateQuestionDto {
   @IsOptional()
+  @ValidateIf((o) => o.id !== "Top")
   @IsMongoId()
   id: string;
 
@@ -20,6 +22,7 @@ export class CreateQuestionDto {
   title: string;
 
   @IsNotEmpty()
+  @ValidateIf((o) => o.category !== "Top")
   @IsMongoId()
   category: string;
 
@@ -39,11 +42,4 @@ export class CreateQuestionDto {
   @IsOptional()
   @IsString({ each: true })
   tags: Array<string>;
-
-  @IsOptional()
-  @IsDate()
-  modifiedAt: Date;
-
-  @IsString()
-  creator: string;
 }

@@ -35,9 +35,9 @@ class Sidebar extends Component {
   ];
   menuName = [
     "Dashboard",
-    "Profile",
-    "Inbox",
-    "Sales",
+    "Category",
+    "Question",
+    "Exam",
     "Analytics",
     "Charts",
     "Tables",
@@ -47,8 +47,8 @@ class Sidebar extends Component {
   navLinks = [
     "/dashboard",
     "/category",
-    "/api1",
-    "/api2",
+    "/question",
+    "/exam",
     "/api3",
     "/api4",
     "/api5",
@@ -56,7 +56,7 @@ class Sidebar extends Component {
     "/api7",
   ];
   // state = {
-  //   userName: null
+  //   userName: [null]
   // };
   componentDidMount() {
     this.props.onGetUserLoader();
@@ -72,7 +72,7 @@ class Sidebar extends Component {
           React-Bootstrap
         </Navbar.Brand>
         <h3 className="text-white text-center">Welcome Back</h3>
-        <div class="bottom-border pb-3">
+        <div className="bottom-border pb-3">
           <Image
             src={avatar}
             roundedCircle={true}
@@ -85,7 +85,7 @@ class Sidebar extends Component {
         </div>
         <Nav className={this.classes.sideNav}>
           {this.faIcons.map((value, index) => (
-            <Nav.Item>
+            <Nav.Item key={index}>
               <NavLink
                 to={this.navLinks[index]}
                 className={

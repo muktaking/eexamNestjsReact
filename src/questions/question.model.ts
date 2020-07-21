@@ -2,7 +2,7 @@ import * as mongoose from "mongoose";
 
 export enum QType {
   singleBestAnswer = "sba",
-  Matrix = "matrix"
+  Matrix = "matrix",
 }
 
 export interface Stem {
@@ -29,22 +29,22 @@ export const QuestionSchema = new mongoose.Schema({
   title: {
     type: String,
     max: 200,
-    required: true
+    required: true,
   },
   category: {
     type: mongoose.SchemaTypes.ObjectId,
     required: true,
-    ref: "Category"
+    ref: "Category",
   },
   qType: {
     type: String,
     enum: [QType.singleBestAnswer, QType.Matrix],
-    required: true
+    required: true,
   },
   qText: {
     type: String,
     max: 500,
-    required: true
+    required: true,
   },
   stems: {
     type: [
@@ -52,38 +52,38 @@ export const QuestionSchema = new mongoose.Schema({
         qStem: {
           type: String,
           maxlength: 200,
-          required: true
+          required: true,
         },
         aStem: {
           type: String,
           maxlength: 1,
-          required: true
+          required: true,
         },
         fbStem: {
           type: String,
-          maxlength: 200
-        }
-      }
+          maxlength: 200,
+        },
+      },
     ],
     required: true,
-    _id: false
+    _id: false,
   },
   generalFeedbacks: String,
   tags: [String],
   createDate: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   modifiedDate: {
-    type: Date
+    type: Date,
   },
   creator: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "User",
-    required: true
+    required: true,
   },
   modifiedBy: {
     type: [mongoose.SchemaTypes.ObjectId],
-    ref: "User"
-  }
+    ref: "User",
+  },
 });

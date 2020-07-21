@@ -11,6 +11,8 @@ import Topbar from "../../components/topbar/topbar";
 //importing routing parts
 import Dashboard from "./dashboard";
 import Category from "./category";
+import Question from "./question";
+import Exam from "./exam";
 import "../../assets/scss/section/dashboard.scss";
 
 const innerContent = (props) => {
@@ -36,7 +38,8 @@ const innerContent = (props) => {
                 <>
                   <Route path="/dashboard" exact component={Dashboard} />
                   <Route path="/category" exact component={Category} />
-                  <Route path="/category/:slug" exact component={Category} />
+                  <Route path="/question" exact component={Question} />
+                  <Route path="/exam" exact component={Exam} />
                 </>
               }
             </Col>

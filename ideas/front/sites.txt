@@ -1,0 +1,8 @@
+pages:
+landing
+login/signup
+user - profile
+dashboard - miniinfo, 
+category - create,update,delete (have 2 section -- topics,questionBank)
+exam - create, update, delete, participate
+question - create, update, delete

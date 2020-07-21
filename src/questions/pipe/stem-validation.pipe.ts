@@ -7,6 +7,7 @@ export class StemValidationPipe implements PipeTransform {
     const errorMessage: Array<string> = [];
     let qStem, aStem, fdStem;
     try {
+      console.log(stem);
       stem = stem.filter((v, i) => {
         //console.log(v.aStem);
         let error: Array<string> = [];

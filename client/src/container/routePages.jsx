@@ -24,7 +24,8 @@ const RoutePages = (props) => {
       <Switch>
         <Route path="/dashboard" component={InnerContent} />
         <Route path="/category" component={InnerContent} />
-        <Route path="/category/:slug" component={InnerContent} />
+        <Route path="/question" component={InnerContent} />
+        <Route path="/exam" component={InnerContent} />
         <Route path="/logout" component={LogoutPage} />
         <Route path="/" exact component={Landing} />
         <Redirect to="/dashboard" />

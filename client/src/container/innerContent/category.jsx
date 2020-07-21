@@ -51,6 +51,7 @@ class Category extends Component {
       //isEditCategory: false,
       id: null, // need to pass id in edit or delete category section
       name: null, // used in editCategory component to display the category name in heading
+      slug: null,
       parentId: "Top",
       description: null,
       order: null,
@@ -73,6 +74,7 @@ class Category extends Component {
     this.setState({
       id: null,
       name: null,
+      slug: null,
       parentId: "Top",
       description: null,
       order: null,
@@ -109,6 +111,59 @@ class Category extends Component {
   submitHandler = (e) => {
     e.preventDefault();
 
+    const { formErrors, name, order, description, image } = this.state;
+
+    const parentId =
+      this.state.parentId || this.selectOptionValueRef.current.value;
+
+    const rest = { name, parentId, order, description, image };
+
+    const { valid, error } = formValid({ rest, formErrors });
+
+    if (valid) {
+      //this.resetState();
+      const data = new FormData();
+      Object.keys(rest).forEach((key) => {
+        rest[key] && data.append(key, rest[key]);
+      });
+      setAuthorizationToken(this.props.auth.token);
+      this.setState({ loading: true });
+
+      axios
+        .request({
+          baseURL: "http://localhost:4000/",
+          url: "/categories",
+          method: "post",
+          data,
+        })
+        .then((res) => {
+          this.setState({
+            loading: false,
+            response: "Successfully created Category",
+            responseClass: "success",
+          });
+          this.props.onFetchCategoryLoader(); // update the category upon creating or updating of category
+          setTimeout(this.hideResponse, 2000); // after 2s respones message will disaper
+        })
+        .catch((e) => {
+          const response = errorHandler(e);
+          this.setState({ loading: false, response, responseClass: "danger" });
+          setTimeout(this.hideResponse, 2000);
+        });
+    } else {
+      this.setState({
+        response:
+          "Please fill form corectly" +
+          (error ? " __ " + error.toUpperCase() + " __" : ""),
+        responseClass: "danger",
+      });
+      setTimeout(this.hideResponse, 2000);
+    }
+  };
+
+  editCategorysubmitHandler = (e) => {
+    e.preventDefault();
+
     const {
       formErrors,
       id,
@@ -116,19 +171,15 @@ class Category extends Component {
       order,
       description,
       image,
-      //isEditCategory,
+      slug,
     } = this.state;
     const parentId =
       this.state.parentId || this.selectOptionValueRef.current.value;
-    //  is used to differ the create to edit category section
-    const rest = id
-      ? image
-        ? { id, name, parentId, order, description, image }
-        : { id, name, parentId, order, description }
-      : { name, parentId, order, description, image };
 
-    const method = id ? "patch" : "post"; // here also id used to patch or post
-    console.log(rest);
+    const rest = image
+      ? { id, name, slug, parentId, order, description, image }
+      : { id, name, slug, parentId, order, description };
+
     const { valid, error } = formValid({ rest, formErrors });
 
     if (valid) {
@@ -145,14 +196,13 @@ class Category extends Component {
         .request({
           baseURL: "http://localhost:4000/",
           url: "/categories",
-          method,
+          method: "patch",
           data,
         })
         .then((res) => {
           this.setState({
             loading: false,
-            response:
-              "Successfully " + (id ? "Updated " : "created ") + "A Category",
+            response: "Successfully Updated Category",
             responseClass: "success",
           });
           this.props.onFetchCategoryLoader(); // update the category upon creating or updating of category
@@ -163,6 +213,7 @@ class Category extends Component {
           this.setState({ loading: false, response, responseClass: "danger" });
           setTimeout(this.hideResponse, 2000);
         });
+      this.resetState();
     } else {
       this.setState({
         response:
@@ -281,6 +332,12 @@ class Category extends Component {
           handleChange={this.handleChange}
           formErrors={this.state.formErrors}
           categories={categories}
+          category={{
+            name: this.state.name,
+            parentId: this.state.parentId,
+            order: this.state.order,
+            description: this.state.description,
+          }}
         />
 
         <div className="mt-3">
@@ -299,6 +356,7 @@ class Category extends Component {
                         onClick={() => {
                           this.setState({
                             id: e._id,
+                            slug: e.slug,
                             name: e.name,
                             parentId: e.parentId,
                             order: e.order,
@@ -326,7 +384,7 @@ class Category extends Component {
                       <div>
                         {this.state.showEditCategoryComponent === e.slug && (
                           <CategoryForm
-                            submitHandler={this.submitHandler}
+                            submitHandler={this.editCategorysubmitHandler}
                             handleChange={this.handleChange}
                             loading={this.state.loading}
                             formErrors={this.state.formErrors}

@@ -22,6 +22,11 @@ export class createCategoryDto {
   @IsNotIn(["_", "/"])
   name: string;
 
+  @IsOptional()
+  @IsString()
+  @IsNotIn(["_", "/"])
+  slug: string;
+
   @MinLength(30)
   @MaxLength(300)
   @IsString()

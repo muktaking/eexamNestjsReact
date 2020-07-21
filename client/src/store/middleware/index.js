@@ -13,6 +13,7 @@ import { apiCallBegun, apiCallSuccess, apiCallFail } from "../api";
 import { authSuccess, checkAuthTimeOut } from "../auth";
 
 import setAuthorizationToken from "../../utils/setAuthorizationToken";
+import errorHandler from "../../utils/errorHandler";
 
 //api middleware function
 
@@ -23,6 +24,7 @@ export const api = ({ getState, dispatch }) => (next) => async (action) => {
     url,
     method,
     data,
+    config,
     onStart,
     onSuccess,
     onError,
@@ -51,6 +53,7 @@ export const api = ({ getState, dispatch }) => (next) => async (action) => {
       url,
       method,
       data,
+      config,
     });
 
     dispatch(apiCallSuccess(response.data));
@@ -68,7 +71,8 @@ export const api = ({ getState, dispatch }) => (next) => async (action) => {
       dispatch({ type: onSuccess, payload: response.data });
     }
   } catch (error) {
-    dispatch(apiCallFail(error.message));
-    if (onError) dispatch({ type: onError, payload: error.message });
+    const response = errorHandler(error);
+    dispatch(apiCallFail(response));
+    if (onError) dispatch({ type: onError, payload: response });
   }
 };

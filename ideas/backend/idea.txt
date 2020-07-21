@@ -1,0 +1,37 @@
+in future category will be replaced by --> topics in @exams and questionBank in @questions.
+
+student will be able to search exam by date and topics
+
+mentor will be able to make questions by questionBank
+
+
+new examModel:
+ {
+  id: string;
+  title: string;
+  type: ExamType;
+  topics: Array<mongoId>; // have relations
+  description: string;
+  questions: Array<string>;
+  singleQuestionMark: number;
+  singleStemMark: number;
+  penaltyMark: number;
+  timeLimit: number;
+  createdAt: Date;
+  creator: string;
+}
+
+new questionModel:
+ {
+  id: string;
+  title: string;
+  questionBank: mongoId; // have a relation
+  qType: QType;
+  qText: string;
+  stems: Array<Partial<Stem>>;
+  generalFeedback: string;
+  tags: Array<string>;
+  createdAt: Date;
+  modifiedAt: Date;
+  creator: string;
+}

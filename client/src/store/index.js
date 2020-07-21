@@ -4,6 +4,7 @@ import apiReducer from "./api";
 import miniInfoReducer from "./miniInfo";
 import userReducer from "./user";
 import categoryReducer from "./category";
+import questionReducer from "./question";
 
 export default combineReducers({
   api: apiReducer,
@@ -11,4 +12,5 @@ export default combineReducers({
   miniInfo: miniInfoReducer,
   user: userReducer,
   category: categoryReducer,
+  question: questionReducer,
 });

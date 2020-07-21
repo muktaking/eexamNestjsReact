@@ -87,26 +87,39 @@ export class CategoriesService {
   }
 
   async updateCategory(id: string, categoryDto: createCategoryDto, image: any) {
-    let { name, description, parentId, order } = categoryDto;
+    let { name, description, parentId, order, slug } = categoryDto;
+
     name = firstltrCapRestLow(name);
     let newCategorySlug;
     parentId = parentId !== "Top" ? parentId : null;
+    try {
+    } catch (error) {}
     const [err, [oldCategory]] = await to(this.CategoryModel.find({ _id: id }));
     if (err) {
       if (image) deleteImageFile(image.filename);
       throw new InternalServerErrorException();
     }
 
-    if (!_.isEqual(oldCategory.parentId, parentId)) {
+    if (_.isEqual(oldCategory.parentId.toString(), parentId)) {
       const [duplicateCategory] = await this.CategoryModel.find({
         name: name,
+        slug: slug,
         parentId: parentId,
       });
+
       if (duplicateCategory) {
-        // duplicateCategory.description = description;
-        // duplicateCategory.order = order;
-        // if (image) duplicateCategory.imageUrl = image.filename;
-        // const [err, res] = await to(duplicateCategory.save());
+        duplicateCategory.description = description;
+        duplicateCategory.order = order;
+        if (image) duplicateCategory.imageUrl = image.filename;
+        const [err, res] = await to(duplicateCategory.save());
+
+        if (res) return { msg: "category updated successully" };
+        if (image) deleteImageFile(image.filename);
+        if (err)
+          throw new ConflictException(
+            "Category by this name is already present"
+          );
+      } else {
         if (image) deleteImageFile(image.filename);
         //if (err)
         throw new ConflictException("Category by this name is already present");

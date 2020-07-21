@@ -52,7 +52,7 @@ const CategoryForm = (props) => {
                 return (
                   <option
                     value={value._id}
-                    selected={category && value.parentId === category.parentId}
+                    selected={category && value._id === category.parentId}
                   >
                     {categorySlug}
                   </option>

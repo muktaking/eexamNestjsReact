@@ -16,13 +16,13 @@ export interface Exam extends mongoose.Document {
 }
 
 export enum ExamType {
-  Asignment = 0,
+  Assignment = 0,
   Weekly = 1,
   Monthly = 2,
   Assesment = 3,
   Term = 3,
   Test = 4,
-  Final = 5
+  Final = 5,
 }
 
 export const ExamSchema = new mongoose.Schema({
@@ -30,7 +30,7 @@ export const ExamSchema = new mongoose.Schema({
   type: {
     type: Number,
     enum: [0, 1, 2, 3, 4, 5],
-    required: true
+    required: true,
   },
   categoryType: { type: [String], required: true },
   description: { type: String, required: true },
@@ -40,5 +40,5 @@ export const ExamSchema = new mongoose.Schema({
   penaltyMark: { type: Number, default: 0 },
   timeLimit: { type: Number, default: 40 },
   createdAt: { type: Date, default: Date.now() },
-  creator: { type: mongoose.SchemaTypes.ObjectId, required: true }
+  creator: { type: mongoose.SchemaTypes.ObjectId, required: true },
 });

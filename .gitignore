@@ -23,7 +23,8 @@
 /client/yarn-error.log*
 
 
-
+#uploads
+/uploads
 
 # compiled output
 /dist

@@ -6,7 +6,10 @@ import {
   Post,
   ValidationPipe,
   UseInterceptors,
-  UploadedFile
+  UploadedFile,
+  UseGuards,
+  Req,
+  Param,
 } from "@nestjs/common";
 import { diskStorage } from "multer";
 import { StemValidationPipe } from "./pipe/stem-validation.pipe";
@@ -16,6 +19,7 @@ import { Stem } from "./question.model";
 import { excelFileFilter, editFileName } from "../utils/file-uploading.utils";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { IsNotEmpty } from "class-validator";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller("questions")
 export class QuestionsController {
@@ -26,34 +30,49 @@ export class QuestionsController {
     return await this.questionService.findAllQuestions();
   }
 
+  @Get("/category/:id")
+  async getQuestionsByCategory(@Param() categoryId) {
+    return await this.questionService.findQuestionByFilter(
+      "category",
+      categoryId.id
+    );
+  }
+
   @Post()
+  @UseGuards(AuthGuard("jwt"))
   @UsePipes(ValidationPipe)
   async createQuestion(
     @Body() createQuestionDto: CreateQuestionDto,
-    @Body("stem", StemValidationPipe) stem: { stem: Stem; error: string }
+    @Body("stem", StemValidationPipe) stem: { stem: Stem; error: string },
+    @Req() req
   ) {
-    return await this.questionService.createQuestion(createQuestionDto, stem);
+    return await this.questionService.createQuestion(
+      createQuestionDto,
+      stem,
+      req.user.id
+    );
   }
 
   @Post("/files")
+  @UseGuards(AuthGuard("jwt"))
   @UsePipes(ValidationPipe)
   @UseInterceptors(
     FileInterceptor("file", {
       storage: diskStorage({
         destination: "./uploads/files",
-        filename: editFileName
+        filename: editFileName,
       }),
-      fileFilter: excelFileFilter
+      fileFilter: excelFileFilter,
     })
   )
   async createQuestionByUpload(
-    @Body("creator") creator: string,
+    @Req() req,
     @Body("category") category: string,
     @UploadedFile() file: string
   ) {
-    //console.log(creator, category, file);
+    console.log(file);
     return await this.questionService.createQuestionByUpload(
-      creator,
+      req.user.id,
       category,
       file
     );

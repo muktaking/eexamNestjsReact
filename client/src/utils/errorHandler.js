@@ -11,6 +11,8 @@ export default function errorHandler(e) {
         } ] field due to " ${Object.values(v.constraints).toString()} "`;
       });
       return message;
+    } else if (responseData.statusCode === 500) {
+      return "Internal Server Error: file may be corrupted or so on.";
     } else {
       //for other errors
       return responseData.message;

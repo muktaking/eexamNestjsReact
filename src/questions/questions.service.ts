@@ -8,6 +8,7 @@ import * as _ from "lodash";
 import { Question, Stem } from "./question.model";
 import { CreateQuestionDto } from "./create-question.dto";
 import { to } from "src/utils/utils";
+import { ValidationError } from "class-validator";
 
 @Injectable()
 export class QuestionsService {
@@ -24,7 +25,7 @@ export class QuestionsService {
   async findQuestionByFilter(filterName, filterValue) {
     filterName = filterName === "id" ? "_id" : filterName;
     const [err, result] = await to(
-      this.QuestionModel.find({ filterName: filterValue })
+      this.QuestionModel.find({ [filterName]: filterValue })
     );
     if (err) throw new InternalServerErrorException();
     return result;
@@ -32,7 +33,8 @@ export class QuestionsService {
 
   async createQuestion(
     createQuestionDto: CreateQuestionDto,
-    stem: { stem: Stem; error: string }
+    stem: { stem: Stem; error: string },
+    creator: string
   ) {
     const {
       title,
@@ -41,7 +43,6 @@ export class QuestionsService {
       qText,
       generalFeedback,
       tags,
-      creator
     } = createQuestionDto;
     const stems = stem.stem;
 
@@ -53,7 +54,7 @@ export class QuestionsService {
       stems,
       generalFeedback,
       tags,
-      creator
+      creator,
     });
     const [err, result] = await to(question.save());
     if (err) {
@@ -72,15 +73,14 @@ export class QuestionsService {
       data = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {
         header: 1,
         raw: false,
-        defval: ""
+        defval: "",
       });
       //console.log(data);
     } catch (error) {
-      console.log(error);
       throw new InternalServerErrorException();
     }
 
-    fs.unlink(excel, err => {
+    fs.unlink(excel, (err) => {
       if (err) {
         console.log(err);
       }
@@ -101,13 +101,15 @@ export class QuestionsService {
       }
     } catch (error) {
       console.log(error);
+
       throw new InternalServerErrorException();
     }
   }
 
   async updateQuestionById(
     createQuestionDto: CreateQuestionDto,
-    stems: { stem: Stem; error: string }
+    stems: { stem: Stem; error: string },
+    creator: string
   ) {
     const {
       id,
@@ -117,7 +119,6 @@ export class QuestionsService {
       qText,
       generalFeedback,
       tags,
-      creator
     } = createQuestionDto;
 
     let [error, updatedQuestion] = await this.QuestionModel.updateOne(
@@ -131,7 +132,7 @@ export class QuestionsService {
         generalFeedback,
         tags,
         modifiedDate: Date.now(),
-        modifiedBy: creator
+        modifiedBy: creator,
       }
     );
     if (error) throw new InternalServerErrorException();
@@ -152,7 +153,7 @@ export class QuestionsService {
       let stem: Stem = {
         qStem: "",
         aStem: "",
-        fbStem: ""
+        fbStem: "",
       };
 
       //validating inputs
@@ -214,13 +215,13 @@ export class QuestionsService {
         qText: element[2],
         stems: stems,
         generalFeedbacks: element[18],
-        tags: _.words(element[19])
+        tags: _.words(element[19]),
       });
     });
     return {
       allData,
       errorIndex,
-      errorMessage
+      errorMessage,
     };
   }
 }
