@@ -2,7 +2,6 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import * as _ from "lodash";
-import * as moment from "moment";
 import { ExamProfile, ExamStat } from "./profile.model";
 import { Exam } from "./exam.model";
 import { to } from "src/utils/utils";
@@ -32,11 +31,8 @@ export class ExamsService {
     return {
       totalExam: [examTotalNumber, examTotalTaken],
       rank: [rank, totalStudent],
-      upcomingExam: [
-        upcomingExam.title,
-        moment(upcomingExam.createdAt).format("MMM Do YY"),
-      ],
-      result: [result, 100],
+      upcomingExam: [upcomingExam.title, upcomingExam.createdAt],
+      result: [...result],
     };
   }
 
@@ -47,7 +43,8 @@ export class ExamsService {
       })
     );
     if (err) throw new InternalServerErrorException();
-    return profile.exams.length;
+    if (profile) return profile.exams.length;
+    return 0;
   }
 
   async findExamTotalNumber() {
@@ -56,9 +53,22 @@ export class ExamsService {
     return examTotal;
   }
 
+  async findAllExams() {
+    const [err, exams] = await to(
+      this.ExamModel.find(
+        {},
+        { _id: 1, title: 1, type: 1, description: 1, createdAt: 1 }
+      ).sort({ _id: -1 })
+    );
+    if (err) throw new InternalServerErrorException();
+
+    return exams;
+  }
   async findLatestExam() {
     const [err, [examLatest]] = await to(
-      this.ExamModel.find().sort({ _id: 1 })
+      this.ExamModel.find({}, { _id: 1, title: 1, type: 1, createdAt: 1 })
+        .limit(1)
+        .sort({ _id: -1 })
     );
     if (err) throw new InternalServerErrorException();
     return examLatest;
@@ -75,7 +85,6 @@ export class ExamsService {
   // <--------------------->
   async findQuestionsByExamId(id: string) {
     const exam = await this.findExamById(id);
-
     if (exam) {
       let [err, questions] = await to(
         this.QuestionModel.find(
@@ -94,6 +103,7 @@ export class ExamsService {
         exam: {
           id: exam._id,
           singleQuestionMark: exam.singleQuestionMark,
+          singleStemMark: exam.singleStemMark,
           penaltyMark: exam.penaltyMark,
           timeLimit: exam.timeLimit,
         },
@@ -104,12 +114,13 @@ export class ExamsService {
 
   // <----------------------->
   async findProfileByUserEmail(
-    email: string,
-    examId: string
+    email: string
+    //examId: string
   ): Promise<ExamProfile> {
     const [err, profile] = await to(
       this.ExamProfileModel.findOne({
-        $and: [{ "exams._id": examId }, { user: email }],
+        user: email,
+        // $and: [{ "exams._id": examId }, { user: email }],
       })
     );
     if (err) throw new InternalServerErrorException();
@@ -123,14 +134,16 @@ export class ExamsService {
     );
     if (err) throw new InternalServerErrorException();
     let totalAvgScore = 0;
-    profile.exams.map((e) => {
-      totalAvgScore += e.averageScore;
-    });
-    return totalAvgScore;
+    let totalMark = 0;
+    profile &&
+      profile.exams.map((e) => {
+        totalAvgScore += e.averageScore;
+        totalMark += e.totalMark;
+      });
+    return [totalAvgScore.toFixed(2), totalMark.toFixed(2)];
   }
   //<-------------------------------->
   async createExam(createExamDto: CreateExamDto, creator: string) {
-    creator = "5e2b2b8d88d81912a40a27a8";
     const {
       title,
       type,

@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import axios from "axios";
+import {
+  FaHome,
+  FaCog,
+  FaQuestion,
+  FaPen,
+  FaBookOpen,
+  FaBook,
+  FaUser,
+  FaTools,
+} from "react-icons/fa";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Col from "react-bootstrap/Col";
@@ -11,6 +20,7 @@ import avatorImg from "../../assets/image/admin.jpeg";
 
 import setAuthorizationToken from "../../utils/setAuthorizationToken";
 import { getUserLoader } from "../../store/user";
+import { rolePermitted, canActivate } from "../../utils/canActivate";
 
 class Sidebar extends Component {
   constructor(props) {
@@ -22,39 +32,9 @@ class Sidebar extends Component {
     fa: ["text-light", "fa-lg", "mr-3"].join(" "),
   };
 
-  faIcons = [
-    "home",
-    "user",
-    "envelope",
-    "shopping-cart",
-    "chart-line",
-    "chart-bar",
-    "table",
-    "wrench",
-    "file-alt",
-  ];
-  menuName = [
-    "Dashboard",
-    "Category",
-    "Question",
-    "Exam",
-    "Analytics",
-    "Charts",
-    "Tables",
-    "Settings",
-    "Documentation",
-  ];
-  navLinks = [
-    "/dashboard",
-    "/category",
-    "/question",
-    "/exam",
-    "/api3",
-    "/api4",
-    "/api5",
-    "/api6",
-    "/api7",
-  ];
+  faIcons = [];
+  menuName = [];
+  navLinks = [];
   // state = {
   //   userName: [null]
   // };
@@ -63,13 +43,74 @@ class Sidebar extends Component {
   }
   render() {
     const { userName, email, id, avatar } = this.props.user;
+    if (canActivate(rolePermitted.student, this.props.token)) {
+      this.faIcons = [
+        <FaHome size="1.6em" className="mr-2" />,
+        <FaBookOpen size="1.6em" className="mr-2" />,
+        <FaUser size="1.6em" className="mr-2" />,
+        <FaTools size="1.6em" className="mr-2" />,
+      ];
+      this.menuName = ["Dashboard", "Exams", "Profile", "Settings"];
+      this.navLinks = ["/dashboard", "/exams", "/profile", "/settings"];
+    }
+
+    if (canActivate(rolePermitted.mentor, this.props.token)) {
+      this.faIcons = [
+        <FaHome size="1.6em" className="mr-2" />,
+        <FaQuestion size="1.6em" className="mr-2" />,
+        <FaPen size="1.6em" className="mr-2" />,
+        <FaUser size="1.6em" className="mr-2" />,
+        <FaTools size="1.6em" className="mr-2" />,
+      ];
+      this.menuName = [
+        "Dashboard",
+        "Question",
+        "Exam Paper",
+        "Profile",
+        "Settings",
+      ];
+      this.navLinks = [
+        "/dashboard",
+        "/question",
+        "/exampaper",
+        "/profile",
+        "/settings",
+      ];
+    }
+    if (canActivate(rolePermitted.admin, this.props.token)) {
+      this.faIcons = [
+        <FaHome size="1.6em" className="mr-2" />,
+        <FaCog size="1.6em" className="mr-2" />,
+        <FaQuestion size="1.6em" className="mr-2" />,
+        <FaPen size="1.6em" className="mr-2" />,
+        <FaUser size="1.6em" className="mr-2" />,
+        <FaTools size="1.6em" className="mr-2" />,
+      ];
+      this.menuName = [
+        "Dashboard",
+        "Category",
+        "Question",
+        "Exam Paper",
+        "Profile",
+        "Settings",
+      ];
+      this.navLinks = [
+        "/dashboard",
+        "/category",
+        "/question",
+        "/exampaper",
+        "/profile",
+        "/settings",
+      ];
+    }
+
     return (
-      <>
+      <div>
         <Navbar.Brand
           href="#home"
           className="text-white d-block mx-auto text-center py-3 mb-4 bottom-border"
         >
-          React-Bootstrap
+          E-Exam
         </Navbar.Brand>
         <h3 className="text-white text-center">Welcome Back</h3>
         <div className="bottom-border pb-3">
@@ -93,17 +134,14 @@ class Sidebar extends Component {
                 }
                 activeClassName="current"
               >
-                <FontAwesomeIcon
-                  icon={value}
-                  size="lg"
-                  className={this.classes.fa}
-                />
+                {value}
+
                 {this.menuName[index]}
               </NavLink>
             </Nav.Item>
           ))}
         </Nav>
-      </>
+      </div>
     );
   }
 }
@@ -116,6 +154,7 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
   return {
+    token: state.auth.token,
     user: state.user,
   };
 };

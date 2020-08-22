@@ -21,20 +21,25 @@ import { createCategoryDto } from "./dto/category.dto";
 import { CategoriesService } from "./categories.service";
 import { IsMongoId } from "class-validator";
 import { AuthGuard } from "@nestjs/passport";
+import { RolesGuard } from "src/roles.guard";
+import { RolePermitted } from "src/users/user.model";
+import { Role } from "src/roles.decorator";
 
 // const serverConfig = config.get('server');
 // const SERVER_URL = `${serverConfig.url}:${serverConfig.port}/`
-
+@UseGuards(AuthGuard("jwt"), RolesGuard)
 @Controller("categories")
 export class CategoriesController {
   constructor(private categoriesService: CategoriesService) {}
 
   @Get()
+  @Role(RolePermitted.mentor)
   async getAllCategories() {
     return await this.categoriesService.findAllCategories();
   }
 
   @Get("/*")
+  @Role(RolePermitted.mentor)
   async getCategory(@Req() req) {
     return await this.categoriesService.findCategoryBySlug(
       "Top_" + req.params[0].replace("/", "_")
@@ -42,7 +47,7 @@ export class CategoriesController {
   }
 
   @Post()
-  @UseGuards(AuthGuard("jwt"))
+  @Role(RolePermitted.moderator)
   @UsePipes(ValidationPipe)
   @UseInterceptors(
     FileInterceptor("image", {
@@ -68,7 +73,7 @@ export class CategoriesController {
   }
 
   @Patch()
-  @UseGuards(AuthGuard("jwt"))
+  @Role(RolePermitted.moderator)
   @UsePipes(ValidationPipe)
   @UseInterceptors(
     FileInterceptor("image", {
@@ -92,7 +97,7 @@ export class CategoriesController {
   }
 
   @Delete()
-  @UseGuards(AuthGuard("jwt"))
+  @Role(RolePermitted.moderator)
   @UsePipes(ValidationPipe)
   async deleteCategoryById(@Body("id") id: string) {
     return await this.categoriesService.deleteCategoryById(id);

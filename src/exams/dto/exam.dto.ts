@@ -4,7 +4,7 @@ import {
   IsString,
   IsEnum,
   IsMongoId,
-  IsOptional
+  IsOptional,
 } from "class-validator";
 
 export class CreateExamDto {
@@ -13,7 +13,15 @@ export class CreateExamDto {
   title: string;
 
   @IsNotEmpty()
-  @IsEnum([0, 1, 2, 3, 4, 5])
+  @IsEnum([
+    ExamType.Assignment.toString(),
+    ExamType.Weekly.toString(),
+    ExamType.Monthly.toString(),
+    ExamType.Term.toString(),
+    ExamType.Assesment.toString(),
+    ExamType.Test.toString(),
+    ExamType.Final.toString(),
+  ])
   type: ExamType;
 
   @IsNotEmpty()

@@ -6,5 +6,5 @@ export class GetAnswersDto {
   examId: string;
 
   @IsNotEmpty()
-  timeTakenToComplete: number;
+  timeTakenToComplete: string;
 }

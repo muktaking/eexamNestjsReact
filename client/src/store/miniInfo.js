@@ -5,10 +5,10 @@ import { apiCallBegun } from "./api";
 const slice = createSlice({
   name: "miniInfo",
   initialState: {
-    totalExam: [0, 100],
-    rank: [1, 1200],
-    upcomingExam: ["no", "01-02-03"],
-    result: [0.0, 60],
+    totalExam: [0, 0],
+    rank: [1, 100],
+    upcomingExam: ["No Exam", "01-02-03"],
+    result: [0.0, 100],
   },
   reducers: {
     miniInfo: (state, action) => {
@@ -24,7 +24,7 @@ export const { miniInfo } = slice.actions;
 
 export default slice.reducer;
 
-export const miniInfoLoader = () => (dispatch, getState) => {
+export const miniInfoLoader = () => (dispatch) => {
   dispatch(
     apiCallBegun({
       url: "/exams/miniinfo",

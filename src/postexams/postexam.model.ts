@@ -9,8 +9,7 @@ export interface Particulars {
 }
 
 export interface Result {
-  matrixResult?: Array<boolean>;
-  sbaResult?: number;
+  stemResult?: Array<boolean> | number;
   mark: number;
 }
 

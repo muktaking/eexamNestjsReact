@@ -4,7 +4,7 @@ import {
   Body,
   ValidationPipe,
   UseGuards,
-  Req
+  Req,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 
@@ -35,11 +35,5 @@ export class AuthController {
   ) {
     return this.authService.login(req.user);
     //return await this.usersService.validateUser(email, password);
-  }
-
-  @UseGuards(AuthGuard("jwt"))
-  @Post("/test")
-  test(@Req() req) {
-    return req.user;
   }
 }

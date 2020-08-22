@@ -150,12 +150,6 @@ export class QuestionsService {
     data.forEach((element, index) => {
       const stems = [];
 
-      let stem: Stem = {
-        qStem: "",
-        aStem: "",
-        fbStem: "",
-      };
-
       //validating inputs
       //title(0),qtype(1),text(2),stem(3-7),ans(8-12),feed(13-17),gf(18),tags(19)
       if (element[0] === "") {
@@ -201,12 +195,20 @@ export class QuestionsService {
       }
 
       for (let i = 3; i < 8; i++) {
+        let stem: Stem = {
+          qStem: "",
+          aStem: "",
+          fbStem: "",
+        };
         stem.qStem = element[i] !== "" ? element[i] : null;
         stem.aStem = element[i + 5] !== "" ? element[i + 5] : null;
         stem.fbStem = element[i + 10] !== "" ? element[i + 10] : null;
-
+        //console.log("----------------", stem);
         if (stem.qStem && stem.aStem) stems.push(stem);
       }
+      console.log("-------------");
+      console.log(stems);
+      console.log("-------------");
       allData.push({
         title: element[0],
         category,

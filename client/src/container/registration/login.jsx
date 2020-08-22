@@ -87,6 +87,7 @@ class Home extends Component {
 
     // let authRedirect;
     // if (this.props.isAuthenticated) {
+    //   console.log(this.props.isAuthenticated);
     //   authRedirect = <Redirect to="/dashboard" />;
     // }
     return (
@@ -111,7 +112,7 @@ class Home extends Component {
             ></Spinner>
           )}
           <div className="heading-underline"></div>
-          <Form className="mb-4" onSubmit={this.submitHandler} novalidate>
+          <Form className="mb-4" onSubmit={this.submitHandler} noValidate>
             <div className="text-white mb-2 bg-danger">
               {this.props.auth.error &&
                 this.props.auth.error.response.statusText}

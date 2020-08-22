@@ -5,6 +5,8 @@ import miniInfoReducer from "./miniInfo";
 import userReducer from "./user";
 import categoryReducer from "./category";
 import questionReducer from "./question";
+import examPaperReducer from "./examPaper";
+import examsReducer from "./exams";
 
 export default combineReducers({
   api: apiReducer,
@@ -13,4 +15,6 @@ export default combineReducers({
   user: userReducer,
   category: categoryReducer,
   question: questionReducer,
+  examPaper: examPaperReducer,
+  exams: examsReducer,
 });

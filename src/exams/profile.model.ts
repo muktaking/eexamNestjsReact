@@ -8,6 +8,7 @@ export interface ExamStat {
   _id: string;
   attemptNumbers: number;
   averageScore: number;
+  totalMark: number;
   firstAttemptTime: number;
   lastAttemptTime: number;
 }
@@ -15,7 +16,7 @@ export interface ExamStat {
 export const ExamProfileSchema = new mongoose.Schema({
   user: {
     type: String, // save user email address here
-    required: true
+    required: true,
   },
   exams: {
     type: [
@@ -23,35 +24,39 @@ export const ExamProfileSchema = new mongoose.Schema({
         _id: {
           //can be examId
           type: mongoose.Types.ObjectId,
-          required: true
+          required: true,
         },
         attemptNumbers: {
           type: Number,
-          default: 1
+          default: 1,
         },
         averageScore: {
           type: Number,
           set: function(v) {
             if (!this.averageScore) return v;
-            return Number(
-              (
-                this.averageScore + Number((v / this.attemptNumbers).toFixed(2))
-              ).toFixed(2)
-            );
-          }
+
+            return +(
+              (this.averageScore * (this.attemptNumbers - 1) + v) /
+              this.attemptNumbers
+            ).toFixed(2);
+          },
+        },
+        totalMark: {
+          type: Number,
+          required: true,
         },
         firstAttemptTime: {
           type: Date,
-          default: Date.now
+          default: Date.now,
         },
         lastAttemptTime: {
           type: Date,
-          default: Date.now
-        }
-      }
-    ]
+          default: Date.now,
+        },
+      },
+    ],
     // set: function(v) {
     //   return this.exams.push(v);
     // }
-  }
+  },
 });

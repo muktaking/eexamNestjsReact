@@ -52,7 +52,7 @@ export const api = ({ getState, dispatch }) => (next) => async (action) => {
       baseURL: "http://localhost:4000/",
       url,
       method,
-      data,
+      data: data,
       config,
     });
 
@@ -67,8 +67,8 @@ export const api = ({ getState, dispatch }) => (next) => async (action) => {
         localStorage.setItem("expirationDate", expirationDate);
         localStorage.setItem("userId", response.data.id);
         dispatch(checkAuthTimeOut(response.data.expireIn));
-      }
-      dispatch({ type: onSuccess, payload: response.data });
+        dispatch({ type: authSuccess.type, payload: response.data });
+      } else dispatch({ type: onSuccess, payload: response.data });
     }
   } catch (error) {
     const response = errorHandler(error);

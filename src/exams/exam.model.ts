@@ -20,9 +20,9 @@ export enum ExamType {
   Weekly = 1,
   Monthly = 2,
   Assesment = 3,
-  Term = 3,
-  Test = 4,
-  Final = 5,
+  Term = 4,
+  Test = 5,
+  Final = 6,
 }
 
 export const ExamSchema = new mongoose.Schema({
@@ -34,7 +34,11 @@ export const ExamSchema = new mongoose.Schema({
   },
   categoryType: { type: [String], required: true },
   description: { type: String, required: true },
-  questions: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+  questions: {
+    type: [mongoose.SchemaTypes.ObjectId],
+    required: true,
+    ref: "QuestionSchema",
+  },
   singleQuestionMark: { type: Number, default: 1 },
   singleStemMark: { type: Number, default: 0.2 },
   penaltyMark: { type: Number, default: 0 },

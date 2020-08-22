@@ -20,16 +20,23 @@ import { excelFileFilter, editFileName } from "../utils/file-uploading.utils";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { IsNotEmpty } from "class-validator";
 import { AuthGuard } from "@nestjs/passport";
+import { RolesGuard } from "src/roles.guard";
+import { Role } from "src/roles.decorator";
+import { RolePermitted } from "src/users/user.model";
 
+@UseGuards(AuthGuard("jwt"), RolesGuard)
 @Controller("questions")
 export class QuestionsController {
   constructor(private readonly questionService: QuestionsService) {}
 
   @Get()
+  //@UseGuards(AuthGuard("jwt"))
+  @Role(RolePermitted.mentor)
   async getAllQuestions() {
     return await this.questionService.findAllQuestions();
   }
 
+  @Role(RolePermitted.moderator)
   @Get("/category/:id")
   async getQuestionsByCategory(@Param() categoryId) {
     return await this.questionService.findQuestionByFilter(
@@ -39,7 +46,7 @@ export class QuestionsController {
   }
 
   @Post()
-  @UseGuards(AuthGuard("jwt"))
+  @Role(RolePermitted.mentor)
   @UsePipes(ValidationPipe)
   async createQuestion(
     @Body() createQuestionDto: CreateQuestionDto,
@@ -54,7 +61,7 @@ export class QuestionsController {
   }
 
   @Post("/files")
-  @UseGuards(AuthGuard("jwt"))
+  @Role(RolePermitted.mentor)
   @UsePipes(ValidationPipe)
   @UseInterceptors(
     FileInterceptor("file", {

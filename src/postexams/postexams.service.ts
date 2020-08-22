@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import {
+  Injectable,
+  InternalServerErrorException,
+  Scope,
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import * as _ from "lodash";
@@ -10,7 +14,7 @@ import { Particulars, Result, StudentAnswer } from "./postexam.model";
 import { QType, Question } from "src/questions/question.model";
 import { GetAnswersDto } from "./dto/get-answers.dto";
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class PostexamsService {
   constructor(
     @InjectModel("ExamProfile")
@@ -40,24 +44,25 @@ export class PostexamsService {
     const exam: Exam = await this.examService.findExamById(examId); //1. Get the exam details by id
     let profile: ExamProfile = await this.examService.findProfileByUserEmail(
       //2. get the exam profile of user
-      user.email,
-      examId
+      user.email
+      //examId
     );
     let examStat: ExamStat = {
       // creating a null exam stat
       _id: null,
       attemptNumbers: null,
       averageScore: 0,
+      totalMark: null,
       firstAttemptTime: null,
-      lastAttemptTime: null
+      lastAttemptTime: null,
     };
-
     // populate some Global variables
     this.singleQuestionMark = exam.singleQuestionMark;
     this.singleStemMark = exam.singleStemMark;
     this.penaltyMark = exam.penaltyMark;
     this.timeLimit = exam.timeLimit;
     this.totalMark = Math.ceil(this.singleQuestionMark * exam.questions.length); // simple math
+    //this.totalScore = 0;
 
     //exam profile starts
 
@@ -66,23 +71,36 @@ export class PostexamsService {
       profile = new this.ExamProfileModel(); // then, create a new exam profile & exam stat
       examStat._id = examId;
       examStat.attemptNumbers = 1;
+      examStat.totalMark = this.totalMark;
       examStat.firstAttemptTime = Date.now();
       examStat.lastAttemptTime = Date.now();
       profile.user = user.email;
       // average score have to add later, so exams key of profile will be added later
     } else {
-      [examStat] = profile.exams.filter(exam => exam._id == examId); // if user previously attempted
-      examStat.attemptNumbers++;
-      examStat.lastAttemptTime = Date.now();
+      [examStat] = profile.exams.filter((exam) => exam._id == examId); // if user previously attempted
+      if (!examStat) {
+        examStat = {
+          _id: examId,
+          attemptNumbers: 1,
+          totalMark: this.totalMark,
+          firstAttemptTime: Date.now(),
+          lastAttemptTime: Date.now(),
+          averageScore: 0,
+        };
+      } else {
+        examStat.totalMark = this.totalMark;
+        examStat.attemptNumbers++;
+        examStat.lastAttemptTime = Date.now();
+      }
     }
 
     //answer manipulation is started here
-
-    answersByStudent = answersByStudent.filter(v => v.stems.length > 0); //the empty stems answer object are rejected
-    answersByStudent = _.sortBy(answersByStudent, o => o.id); // sort answer by ids,
+    // console.log(answersByStudent);
+    answersByStudent = answersByStudent.filter((v) => v.stems.length > 0); //the empty stems answer object are rejected
+    answersByStudent = _.sortBy(answersByStudent, (o) => o.id); // sort answer by ids,
     // answersByStudent is sorted by id. Because we will match these answers with database saved answer that is also
     //sorted by id
-    const questionIds = answersByStudent.map(v => v.id); // get the questions ids that is also answer id
+    const questionIds = answersByStudent.map((v) => v.id); // get the questions ids that is also answer id
 
     const [err, questions] = await to(
       //fetch the questions
@@ -92,7 +110,7 @@ export class PostexamsService {
           qText: 1,
           stems: 1,
           qType: 1,
-          generalFeedback: 1
+          generalFeedback: 1,
         })
     );
     if (err) throw new InternalServerErrorException();
@@ -112,7 +130,7 @@ export class PostexamsService {
         qText: question.qText,
         stems: question.stems,
         generalFeedback: question.generalFeedback,
-        result: { mark: 0 }
+        result: { mark: 0 },
       };
 
       if (question.qType === QType.Matrix) {
@@ -132,18 +150,22 @@ export class PostexamsService {
     examStat.averageScore = this.totalScore;
 
     if (examStat.attemptNumbers == 1) profile.exams.push(examStat);
-    console.log(profile);
     const [error, result] = await to(profile.save());
-    console.log(error);
+
     if (error) throw new InternalServerErrorException();
 
     const totalScorePercentage =
       +(this.totalScore / this.totalMark).toFixed(2) * 100;
-    return { resultArray, totalScore: this.totalScore, totalScorePercentage };
+    return {
+      resultArray,
+      totalMark: this.totalMark,
+      totalScore: this.totalScore,
+      totalScorePercentage,
+    };
   }
 
   private answersExtractor(question: Question): Array<string> {
-    return question.stems.map(stem => {
+    return question.stems.map((stem) => {
       return stem.aStem;
     });
   }
@@ -155,17 +177,18 @@ export class PostexamsService {
     serverAns: Array<string>,
     studentAns: StudentAnswer
   ): Result {
-    const stemValidatedArray = studentAns.stems.map(
-      (v, i) => v === serverAns[i]
+    console.log(studentAns, serverAns);
+    const stemValidatedArray = serverAns.map((v, i) =>
+      studentAns.stems[i] !== null ? v === studentAns.stems[i] : false
     );
-    const correct = stemValidatedArray.filter(v => v).length;
+    const correct = stemValidatedArray.filter((v) => v).length;
     const wrong = stemValidatedArray.length - correct;
     const mark = +(
       +(+this.singleStemMark * correct).toFixed(2) -
-      +(this.penaltyMark * wrong).toFixed(2)
+      Number((this.penaltyMark * wrong).toFixed(2))
     ).toFixed(2);
     this.totalScore += mark;
-    return { matrixResult: stemValidatedArray, mark };
+    return { stemResult: stemValidatedArray, mark };
   }
 
   //ends
@@ -178,6 +201,6 @@ export class PostexamsService {
     const mark =
       studentAns.stems[0] === serverAns[0] ? this.singleQuestionMark : 0;
     this.totalScore += mark;
-    return { sbaResult: +serverAns[0], mark };
+    return { stemResult: +serverAns[0], mark };
   }
 }
