@@ -139,7 +139,7 @@ class SignUp extends Component {
       })
     ) {
       axios
-        .post("http://localhost:4000/auth/registration", {
+        .post(process.env.REACT_APP_SITE_URL + "/auth/registration", {
           firstName,
           lastName,
           userName,

@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
-import { Row, Col, Card, Button } from "react-bootstrap";
+import { Row, Col, Card, Button, Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { getAllExamsLoader, resetExamResult } from "../../store/exams";
+import { getAllFreeExamsLoader, resetExamResult } from "../../store/exams";
 
 class ExamLists extends Component {
   state = {};
   componentDidMount() {
-    this.props.onGetAllExamsLoader();
+    this.props.onGetAllFreeExamsLoader();
     this.props.onResetExamResult();
   }
   type = [
@@ -30,27 +30,29 @@ class ExamLists extends Component {
               {this.props.exams.exams.map((exam) => (
                 <Col lg={4} className="mb-3">
                   <Card key={exam._id}>
-                    <Card.Img
+                    {/* <Card.Img
                       variant="top"
                       src="https://picsum.photos/286/180"
-                    />
+                    /> */}
                     <Card.Body>
                       <Card.Title>{exam.title}</Card.Title>
-                      <Card.Subtitle>
-                        <span className="ml-1">{this.type[+exam.type]}</span>
+                      <Card.Subtitle className="text-light">
+                        <Badge className="ml-1 p-1 bg-danger">
+                          {this.type[+exam.type]}
+                        </Badge>
                         {exam.categoryType &&
                           exam.categoryType.map((category) => (
-                            <span className="ml-1 bg-success">
+                            <Badge className="ml-1 p-1 bg-info">
                               {category.name}
-                            </span>
+                            </Badge>
                           ))}
                       </Card.Subtitle>
-                      <Card.Text>
+                      <Card.Text className="mt-2">
                         {exam.description}
                         <hr />
                         Created At: {moment(exam.createdAt).calendar()}
                       </Card.Text>
-                      <Link to={"/exams/" + exam._id}>Enter to Exam</Link>
+                      <Link to={"/free/" + exam._id}>Enter to Exam</Link>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -65,7 +67,7 @@ class ExamLists extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onGetAllExamsLoader: () => dispatch(getAllExamsLoader()),
+    onGetAllFreeExamsLoader: () => dispatch(getAllFreeExamsLoader()),
     onResetExamResult: () => dispatch({ type: resetExamResult.type }),
   };
 };

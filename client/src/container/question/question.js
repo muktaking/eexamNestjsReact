@@ -199,7 +199,7 @@ class Question extends Component {
     data.append("file", file);
     data.append("category", category);
     axios
-      .post("http://localhost:4000/questions/files", data, {
+      .post(process.env.REACT_APP_SITE_URL + "/questions/files", data, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {

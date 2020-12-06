@@ -49,7 +49,7 @@ export const api = ({ getState, dispatch }) => (next) => async (action) => {
     // }
 
     const response = await axios.request({
-      baseURL: "http://localhost:4000/",
+      baseURL: process.env.REACT_APP_SITE_URL,
       url,
       method,
       data: data,

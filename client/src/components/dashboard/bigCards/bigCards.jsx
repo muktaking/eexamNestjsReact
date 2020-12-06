@@ -7,7 +7,7 @@ import ReportCard from "./mainContentCards/reportCard";
 import RecentActivityCard from "./sideCards/recentActivityCard";
 import ExamFeaturedCard from "./mainContentCards/examsFeaturedCard";
 
-const BigCards = props => {
+const BigCards = (props) => {
   return (
     <>
       <Row>
@@ -15,11 +15,13 @@ const BigCards = props => {
           <ReportCard />
           <hr />
           <ExamFeaturedCard />
+          <hr />
         </Col>
         <Col lg={4}>
           <RecentActivityCard />
           <hr />
           <RecentActivityCard />
+          <hr />
         </Col>
       </Row>
     </>

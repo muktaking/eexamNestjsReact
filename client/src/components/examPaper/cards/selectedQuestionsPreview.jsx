@@ -8,7 +8,7 @@ const SelectedQuestionsPreview = ({
   checkedQuestionIds,
   checkedQuestions,
 }) => {
-  const selectedQuestions = useSelector((state) => state.examProfile.questions);
+  const selectedQuestions = useSelector((state) => state.examPaper.questions);
 
   return (
     <ExamCard header="Selected Questions Preview" showHeader={false}>

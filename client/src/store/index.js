@@ -7,6 +7,7 @@ import categoryReducer from "./category";
 import questionReducer from "./question";
 import examPaperReducer from "./examPaper";
 import examsReducer from "./exams";
+import dashboardReducer from "./dashboard";
 
 export default combineReducers({
   api: apiReducer,
@@ -17,4 +18,5 @@ export default combineReducers({
   question: questionReducer,
   examPaper: examPaperReducer,
   exams: examsReducer,
+  dashboard: dashboardReducer,
 });

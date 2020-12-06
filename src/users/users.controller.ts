@@ -30,4 +30,10 @@ export class UsersController {
     //console.log(req.user.id);
     return await this.userService.findUserById(req.user.id);
   }
+  @Get("all")
+  async geAlltUsers(): Promise<any> {
+    //@Param("id") id: string
+    //console.log(req.user.id);
+    return await this.userService.findAllUsers();
+  }
 }

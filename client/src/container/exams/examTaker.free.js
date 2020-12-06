@@ -8,7 +8,7 @@ import { FaClock } from "react-icons/fa";
 import { Row, Col, Button } from "react-bootstrap";
 import Pagination from "react-js-pagination";
 
-import { getExamByIdLoader, postExamByIdLoader } from "../../store/exams";
+import { getExamByIdLoader, postFreeExamByIdLoader } from "../../store/exams";
 import QuestionView from "../../components/exams/question/question";
 import PaginationCustom from "../../components/shared/pagination/pagination";
 import { paginate } from "../../utils/paginate";
@@ -121,7 +121,7 @@ class ExamTaker extends Component {
                     ).qType,
                   });
                 });
-                this.props.onPostExamByIdLoader({
+                this.props.onPostFreeExamByIdLoader({
                   examId: this.props.match.params.id,
                   timeTakenToComplete:
                     this.props.exams.timeLimit * 60 * 1000 -
@@ -143,7 +143,7 @@ class ExamTaker extends Component {
 const mapDispatchToProps = (dispatch) => {
   return {
     onGetExamByIdLoader: (id) => dispatch(getExamByIdLoader(id)),
-    onPostExamByIdLoader: (data) => dispatch(postExamByIdLoader(data)),
+    onPostFreeExamByIdLoader: (data) => dispatch(postFreeExamByIdLoader(data)),
   };
 };
 const mapStateToProps = (state) => {

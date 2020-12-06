@@ -16,12 +16,13 @@ import { RolesGuard } from "src/roles.guard";
 import { Role } from "src/roles.decorator";
 import { RolePermitted } from "src/users/user.model";
 
-@UseGuards(AuthGuard("jwt"), RolesGuard)
+//@UseGuards(AuthGuard("jwt"), RolesGuard)
 @Controller("exams")
 export class ExamsController {
   constructor(private readonly examService: ExamsService) {}
 
   @Post()
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Role(RolePermitted.mentor)
   @UsePipes(ValidationPipe)
   async createExam(@Body() createExamDto: CreateExamDto, @Req() req) {
@@ -35,12 +36,14 @@ export class ExamsController {
   // }
 
   @Get("miniinfo")
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Role(RolePermitted.student)
   async findUserExamInfo(@Req() req) {
     return await this.examService.findUserExamInfo(req.user.email);
   }
 
   @Get("total")
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Role(RolePermitted.student)
   @UseGuards(AuthGuard("jwt"))
   async findExamTotalNumber() {
@@ -48,25 +51,34 @@ export class ExamsController {
   }
 
   @Get()
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Role(RolePermitted.student)
   async findAllExams() {
     return await this.examService.findAllExams();
   }
 
+  @Get("free")
+  async findAllFreeExams() {
+    return await this.examService.findAllFreeExams();
+  }
+
   @Get("/latest")
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Role(RolePermitted.student)
   async findLatestExam() {
     return await this.examService.findLatestExam();
   }
 
   @Get(":id")
-  @Role(RolePermitted.student)
+  // @UseGuards(AuthGuard("jwt"), RolesGuard)
+  // @Role(RolePermitted.student)
   async findExamById(@Param("id") id) {
     return await this.examService.findExamById(id);
   }
 
   @Get("questions/:id")
-  @Role(RolePermitted.student)
+  // @UseGuards(AuthGuard("jwt"), RolesGuard)
+  // @Role(RolePermitted.student)
   async findQuestionsByExamId(@Param("id") id) {
     return await this.examService.findQuestionsByExamId(id);
   }

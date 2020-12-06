@@ -1,3 +1,5 @@
+const shuffle = require("knuth-shuffle").knuthShuffle;
+
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
@@ -7,6 +9,7 @@ import { Exam } from "./exam.model";
 import { to } from "src/utils/utils";
 import { Question, QType, Stem } from "src/questions/question.model";
 import { CreateExamDto } from "./dto/exam.dto";
+import { Category } from "src/categories/category.model";
 
 @Injectable()
 export class ExamsService {
@@ -15,8 +18,21 @@ export class ExamsService {
     private readonly ExamProfileModel: Model<ExamProfile>,
     @InjectModel("Exam")
     private readonly ExamModel: Model<Exam>,
+    @InjectModel("Category")
+    private readonly CategoryModel: Model<Category>,
     @InjectModel("Question") private readonly QuestionModel: Model<Question> //@InjectModel("User") private readonly UserModel: Model<User>
-  ) {}
+  ) {
+    this.freeCategoryId = this.getFreeCategoryId();
+  }
+  //user specific service
+  private freeCategoryId;
+  async getFreeCategoryId() {
+    const [err, category] = await to(
+      this.CategoryModel.findOne({ name: "Free" })
+    );
+    if (err) throw new InternalServerErrorException();
+    return category ? category._id : null;
+  }
 
   async findUserExamInfo(email: string) {
     const examTotalNumber = await this.findExamTotalNumber();
@@ -26,8 +42,6 @@ export class ExamsService {
     const upcomingExam = await this.findLatestExam();
     const result = await this.getUserAvgResult(email);
 
-    const [err, examTotal] = await to(this.ExamModel.find().count());
-    if (err) throw new InternalServerErrorException();
     return {
       totalExam: [examTotalNumber, examTotalTaken],
       rank: [rank, totalStudent],
@@ -35,6 +49,57 @@ export class ExamsService {
       result: [...result],
     };
   }
+
+  async findUserExamStat(email: string) {
+    const examIds = [];
+    const stat = [];
+    const [err, profile] = await to(
+      this.ExamProfileModel.findOne({
+        user: email,
+      })
+    );
+    if (err) throw new InternalServerErrorException();
+    profile &&
+      profile.exams.map((e) => {
+        examIds.push(e._id);
+        stat.push({
+          attemptNumbers: e.attemptNumbers,
+          averageScore: e.averageScore,
+          totalMark: e.totalMark,
+          lastAttemptTime: e.lastAttemptTime,
+        });
+      });
+
+    const [err1, examTitles] = await to(
+      this.ExamModel.find({ _id: { $in: examIds } }, { title: 1, type: 1 })
+    );
+    if (err1) throw new InternalServerErrorException();
+
+    return { examTitles, stat };
+  }
+
+  // async findUserExamActivity(email: string) {
+  //   const examIds = [];
+  //   const lastAttemptTime = [];
+  //   const [err, profile] = await to(
+  //     this.ExamProfileModel.findOne({
+  //       user: email,
+  //     })
+  //   );
+  //   if (err) throw new InternalServerErrorException();
+  //   profile &&
+  //     profile.exams.map((e) => {
+  //       examIds.push(e._id);
+  //       lastAttemptTime.push(e.lastAttemptTime);
+  //     });
+
+  //   const [err1, examTitles] = await to(
+  //     this.ExamModel.find({ _id: { $in: examIds } }, { title: 1 })
+  //   );
+  //   if (err1) throw new InternalServerErrorException();
+
+  //   return { examTitles, lastAttemptTime };
+  // }
 
   async findTotalExamTaken(email: string) {
     const [err, profile] = await to(
@@ -57,13 +122,42 @@ export class ExamsService {
     const [err, exams] = await to(
       this.ExamModel.find(
         {},
-        { _id: 1, title: 1, type: 1, description: 1, createdAt: 1 }
-      ).sort({ _id: -1 })
+        {
+          _id: 1,
+          title: 1,
+          type: 1,
+          description: 1,
+          createdAt: 1,
+          categoryType: 1,
+        }
+      )
+        .populate("categoryType")
+        .sort({ _id: -1 })
     );
     if (err) throw new InternalServerErrorException();
-
     return exams;
   }
+
+  async findAllFreeExams() {
+    const [err, exams] = await to(
+      this.ExamModel.find(
+        { categoryType: await this.freeCategoryId },
+        {
+          _id: 1,
+          title: 1,
+          type: 1,
+          description: 1,
+          createdAt: 1,
+          categoryType: 1,
+        }
+      )
+        .populate("categoryType")
+        .sort({ _id: -1 })
+    );
+    if (err) throw new InternalServerErrorException();
+    return exams;
+  }
+
   async findLatestExam() {
     const [err, [examLatest]] = await to(
       this.ExamModel.find({}, { _id: 1, title: 1, type: 1, createdAt: 1 })
@@ -99,6 +193,7 @@ export class ExamsService {
           question.stems[index] = stem.qStem; //_.pick(stem, ["qStem"]);
         });
       });
+      shuffle(questions);
       return {
         exam: {
           id: exam._id,

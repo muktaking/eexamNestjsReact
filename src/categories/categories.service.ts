@@ -222,4 +222,12 @@ export class CategoriesService {
       //return res.redirect('/category');
     }
   }
+
+  async getFreeCategoryId() {
+    const [err, category] = await to(
+      this.CategoryModel.findOne({ name: "Free" })
+    );
+    if (err) throw new InternalServerErrorException();
+    return category ? category._id : null;
+  }
 }

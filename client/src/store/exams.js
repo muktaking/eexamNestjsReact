@@ -24,6 +24,7 @@ const slice = createSlice({
       state.totalMark = null;
       state.totalScore = null;
       state.totalScorePercentage = null;
+      state.error = null;
     },
     getAllExams: (state, action) => {
       state.exams = action.payload;
@@ -42,6 +43,9 @@ const slice = createSlice({
       state.totalScore = action.payload.totalScore;
       state.totalScorePercentage = action.payload.totalScorePercentage;
     },
+    postExamError: (state, action) => {
+      state.error = action.payload;
+    },
   },
 });
 
@@ -50,6 +54,7 @@ export const {
   getAllExams,
   getExamById,
   postExamById,
+  postExamError,
 } = slice.actions;
 
 export default slice.reducer;
@@ -60,6 +65,16 @@ export const getAllExamsLoader = () => (dispatch) => {
       url: "/exams/",
       method: "get",
       sendToken: true,
+      onSuccess: getAllExams.type,
+    })
+  );
+};
+
+export const getAllFreeExamsLoader = () => (dispatch) => {
+  dispatch(
+    apiCallBegun({
+      url: "/exams/free",
+      method: "get",
       onSuccess: getAllExams.type,
     })
   );
@@ -85,6 +100,20 @@ export const postExamByIdLoader = (data) => (dispatch) => {
       data: data,
       sendToken: true,
       onSuccess: postExamById.type,
+      onError: postExamError.type,
+    })
+  );
+};
+
+export const postFreeExamByIdLoader = (data) => (dispatch) => {
+  console.log(data);
+  dispatch(
+    apiCallBegun({
+      url: "/postexams/free",
+      method: "post",
+      data: data,
+      onSuccess: postExamById.type,
+      onError: postExamError.type,
     })
   );
 };

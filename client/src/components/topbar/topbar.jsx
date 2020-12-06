@@ -5,6 +5,12 @@ import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile,
+} from "react-device-detect";
 
 import SearchForm from "../form/search/searchForm";
 import { logoutLoader } from "../../store/auth";
@@ -19,18 +25,18 @@ const topbar = (props) => {
   return (
     <Col className="bg-dark py-2 top-navbar">
       <Row className="align-items-center">
-        <Col md={4}>
+        <Col md={4} style={{ paddingLeft: "58px" }}>
           <h4 className="text-light text-uppercase mb-0">{props.pageName}</h4>
         </Col>
-        <Col md={5}>
+        <Col md={5} className="hideInSm">
           <SearchForm
             formControl={classes.formControl}
             searchBtn={classes.searchBtn}
           />
         </Col>
-        <Col md={3}>
+        <Col md={3} className="hideInSm">
           <Nav>
-            <Nav.Item className="icon-parent">
+            {/* <Nav.Item className="icon-parent">
               <Nav.Link className="icon-bullet">
                 <FontAwesomeIcon
                   icon="comments"
@@ -43,7 +49,7 @@ const topbar = (props) => {
               <Nav.Link className="icon-bullet">
                 <FontAwesomeIcon icon="bell" size="lg" className="text-muted" />
               </Nav.Link>
-            </Nav.Item>
+            </Nav.Item> */}
             <Nav.Item
               className="ml-md-auto"
               // onClick={() => {

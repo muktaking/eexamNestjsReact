@@ -131,7 +131,7 @@ class Category extends Component {
 
       axios
         .request({
-          baseURL: "http://localhost:4000/",
+          baseURL: process.env.REACT_APP_SITE_URL,
           url: "/categories",
           method: "post",
           data,
@@ -194,7 +194,7 @@ class Category extends Component {
 
       axios
         .request({
-          baseURL: "http://localhost:4000/",
+          baseURL: process.env.REACT_APP_SITE_URL,
           url: "/categories",
           method: "patch",
           data,
@@ -277,7 +277,7 @@ class Category extends Component {
     this.setState({ loading: true });
 
     axios
-      .delete("http://localhost:4000/categories", {
+      .delete(process.env.REACT_APP_SITE_URL + "/categories", {
         data: { id: category._id },
       })
       .then((res) => {

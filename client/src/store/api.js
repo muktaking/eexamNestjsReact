@@ -9,10 +9,10 @@ const slice = createSlice({
     },
     apiCallSuccess: (api, action) => {
       //api.loading = false;
-      api.result = action.payload.result;
+      api.result = action.payload;
     },
     apiCallFail: (api, action) => {
-      api.error = action.payload.message;
+      api.error = action.payload;
     },
   },
 });

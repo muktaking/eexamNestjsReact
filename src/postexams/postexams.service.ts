@@ -164,6 +164,85 @@ export class PostexamsService {
     };
   }
 
+  async postExamTaskingForFree(
+    getAnswersDto: GetAnswersDto,
+    answersByStudent: Array<StudentAnswer>
+  ) {
+    /// answersByStudent[{id,stems[],type}] // stems[0/1/undefined]
+    const { examId, timeTakenToComplete } = getAnswersDto;
+
+    const exam: Exam = await this.examService.findExamById(examId); //1. Get the exam details by id
+    // populate some Global variables
+    this.singleQuestionMark = exam.singleQuestionMark;
+    this.singleStemMark = exam.singleStemMark;
+    this.penaltyMark = exam.penaltyMark;
+    this.timeLimit = exam.timeLimit;
+    this.totalMark = Math.ceil(this.singleQuestionMark * exam.questions.length); // simple math
+    //this.totalScore = 0;
+
+    //answer manipulation is started here
+    // console.log(answersByStudent);
+    answersByStudent = answersByStudent.filter((v) => v.stems.length > 0); //the empty stems answer object are rejected
+    answersByStudent = _.sortBy(answersByStudent, (o) => o.id); // sort answer by ids,
+    // answersByStudent is sorted by id. Because we will match these answers with database saved answer that is also
+    //sorted by id
+    const questionIds = answersByStudent.map((v) => v.id); // get the questions ids that is also answer id
+
+    const [err, questions] = await to(
+      //fetch the questions
+      this.QuestionModel.find({ _id: { $in: questionIds } })
+        .sort({ _id: 1 })
+        .select({
+          qText: 1,
+          stems: 1,
+          qType: 1,
+          generalFeedback: 1,
+        })
+    );
+    if (err) throw new InternalServerErrorException();
+
+    //const answersByServer = this.answersExtractor(questions);
+
+    const resultArray: Array<Particulars> = []; //result array will hold the total result
+
+    //main algorithm starts
+
+    questions.map((question, index) => {
+      // mapping questions to validate answer and make marksheet
+
+      const particulars: Particulars = {
+        // particulars is the block of data passed to forntend to show result
+        id: question._id,
+        qText: question.qText,
+        stems: question.stems,
+        generalFeedback: question.generalFeedback,
+        result: { mark: 0 },
+      };
+
+      if (question.qType === QType.Matrix) {
+        particulars.result = this.matrixManipulator(
+          this.answersExtractor(question),
+          answersByStudent[index]
+        );
+      } else if (question.qType === QType.singleBestAnswer) {
+        particulars.result = this.sbaManipulator(
+          this.answersExtractor(question),
+          answersByStudent[index]
+        );
+      }
+      resultArray.push(particulars);
+    });
+
+    const totalScorePercentage =
+      +(this.totalScore / this.totalMark).toFixed(2) * 100;
+    return {
+      resultArray,
+      totalMark: this.totalMark,
+      totalScore: this.totalScore,
+      totalScorePercentage,
+    };
+  }
+
   private answersExtractor(question: Question): Array<string> {
     return question.stems.map((stem) => {
       return stem.aStem;

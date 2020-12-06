@@ -7,6 +7,7 @@ const slice = createSlice({
   initialState: {
     questions: [],
     ids: [],
+    success: null,
     error: null,
   },
   reducers: {
@@ -14,10 +15,16 @@ const slice = createSlice({
       state.questions = action.payload.questions;
       state.ids = action.payload.ids;
     },
+    onSuccess: (state, action) => {
+      state.success = action.payload;
+    },
+    onError: (state, action) => {
+      state.error = action.payload;
+    },
   },
 });
 
-export const { selectedQuestions } = slice.actions;
+export const { selectedQuestions, onSuccess, onError } = slice.actions;
 
 export default slice.reducer;
 
@@ -31,6 +38,8 @@ export const postExamProfile = (examSpec, questions) => (dispatch) => {
       url: "/exams",
       method: "post",
       data: { ...examSpec, questions },
+      onSuccess: onSuccess.type,
+      onError: onError.type,
       sendToken: true,
     })
   );

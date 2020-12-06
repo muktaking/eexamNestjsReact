@@ -31,7 +31,7 @@ class BigCard extends Component {
 
   render() {
     return (
-      <Accordion defaultActiveKey="0">
+      <Accordion defaultActiveKey="0" className="mb-3">
         <Card className="border-top-0">
           <Card.Header className={"bg-dark" + " text-light"}>
             <div className="d-flex justify-content-between">

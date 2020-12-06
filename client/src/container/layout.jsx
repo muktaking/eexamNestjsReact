@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Route } from "react-router-dom";
 import { slide as Menu } from "react-burger-menu";
 
@@ -8,6 +8,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 import Sidebar from "../components/sidebar/sidebar";
+import SidebarMini from "../components/sidebar/sidebarMini";
 import IconBar from "../components/sidebar/iconBar";
 import Topbar from "../components/topbar/topbar";
 
@@ -17,75 +18,69 @@ import Category from "./category/category";
 import Question from "./question/question";
 import ExamPaper from "./examPaper/examPaper";
 import ExamTaker from "./exams/examTaker";
+import ExamTakerFree from "./exams/examTaker.free";
 import ExamLists from "./exams/examLists";
+import ExamListsFree from "./exams/examLists.free";
 import Result from "./result/result";
 
 import "../assets/scss/section/dashboard.scss";
 
-const innerContent = (props) => {
+const InnerContent = (props) => {
   const pageName = props.match.url.split("/", 2)[1];
   return (
     <>
-      {/* <Navbar expand="md" variant="light" className="dashboard py-0">
-        <Navbar.Toggle
-          aria-controls="basic-navbar-nav"
-          className="ml-auto mb-2 bg-light"
-        />
-        <Navbar.Collapse id="basic-navbar-nav"></Navbar.Collapse>
-      </Navbar> */}
-      <IconBar
-        styles={{
-          position: "fixed",
-          width: "30px",
-          height: "25px",
-          left: "10px",
-          top: "150px",
-          zIndex: "1000",
-        }}
-      />
       <Menu styles={styles}>
-        <Sidebar />
+        <SidebarMini />
       </Menu>
+      <Container fluid="true">
+        <Row className="no-gutters">
+          <Col xl={2} lg={3} md={4} className="sidebar">
+            <Sidebar />
+          </Col>
 
-      <Container fluid="true" className="dashboard py-0 d-flex">
-        <div style={{ width: "60px" }}></div>
-        <div style={{ flexGrow: "1" }}>
-          <Row>
-            <Col>
-              <Row>
+          <Col xl={10} lg={9} md={8}>
+            <Row>
+              <Col xs={12}>
                 <Topbar pageName={pageName} />
-              </Row>
-              {
-                <>
-                  <Route path="/dashboard" exact component={Dashboard} />
-                  <Route path="/category" exact component={Category} />
-                  <Route path="/question" exact component={Question} />
-                  <Route path="/exampaper" exact component={ExamPaper} />
-                  <Route path="/exams/:id" exact component={ExamTaker} />
-                  <Route path="/exams" exact component={ExamLists} />
-                  <Route path="/result" exact component={Result} />
-                </>
-              }
-            </Col>
-          </Row>
-        </div>
+              </Col>
+              <Col className="ml-4">
+                {
+                  <>
+                    <Route path="/dashboard" exact component={Dashboard} />
+                    <Route path="/category" exact component={Category} />
+                    <Route path="/question" exact component={Question} />
+                    <Route path="/exampaper" exact component={ExamPaper} />
+                    <Route path="/exams/:id" exact component={ExamTaker} />
+                    <Route path="/exams" exact component={ExamLists} />
+                    <Route path="/free" exact component={ExamListsFree} />
+                    <Route path="/free/:id" exact component={ExamTakerFree} />
+                    <Route path="/result" exact component={Result} />
+                  </>
+                }
+              </Col>
+            </Row>
+          </Col>
+        </Row>
       </Container>
     </>
   );
 };
 
-export default innerContent;
+export default InnerContent;
 
 var styles = {
   bmBurgerButton: {
     position: "fixed",
     width: "30px",
     height: "25px",
-    left: "10px",
+    left: "28px",
     top: "10px",
+    // @media (min-width: 767.98px) {
+    //   display: none;
+    // }
   },
   bmBurgerBars: {
-    background: "#A01EEB",
+    background: "#6655D9",
   },
   bmBurgerBarsHover: {
     background: "#a90000",

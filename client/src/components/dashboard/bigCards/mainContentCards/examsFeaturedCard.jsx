@@ -1,106 +1,34 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import ListGroup from "react-bootstrap/ListGroup";
 import BigCard from "../bigCard/bigCard";
+import ExamList from "../../../shared/examList/examList";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-class ExamsFeaturedCard extends React.Component {
-  render() {
-    return (
-      <BigCard
-        header="Featured Exams"
-        headerColor={"primary"}
-        showDatePicker={false}
-      >
-        <ListGroup variant="flush">
-          <ListGroup.Item className="border-0">
-            <ListGroup horizontal className="border-0">
-              <ListGroup.Item className="border-0">
-                Pulmonology of {"Medicine"} Faculty {"(Midterm)"} Starts On:{" "}
-                {"(21.12.29)"}
-              </ListGroup.Item>
-              <ListGroup.Item className="border-0">
-                {["warning", "warning", "warning", "warning", "dark"].map(
-                  value => {
-                    return (
-                      <FontAwesomeIcon
-                        icon={"star"}
-                        size="xs"
-                        className={"text-" + value + " mr-1"}
-                      />
-                    );
-                  }
-                )}
-              </ListGroup.Item>
-            </ListGroup>
-          </ListGroup.Item>
+const ExamsFeaturedCard = () => {
+  const featuredExams = useSelector((state) => state.dashboard.featuredExams);
 
-          <ListGroup.Item>
-            <ListGroup horizontal className="border-0">
-              <ListGroup.Item className="border-0">
-                Pulmonology of {"Medicine"} Faculty {"(Midterm)"} Starts On:{" "}
-                {"(21.12.29)"}
-              </ListGroup.Item>
-              <ListGroup.Item className="border-0">
-                {["warning", "warning", "warning", "warning", "dark"].map(
-                  value => {
-                    return (
-                      <FontAwesomeIcon
-                        icon={"star"}
-                        size="xs"
-                        className={"text-" + value + " mr-1"}
-                      />
-                    );
-                  }
-                )}
-              </ListGroup.Item>
-            </ListGroup>
+  return (
+    <BigCard
+      header="Featured Exams"
+      headerColor={"primary"}
+      showDatePicker={false}
+    >
+      <ListGroup variant="flush">
+        {featuredExams.map((exam, index) => (
+          <ListGroup.Item className="border-0">
+            <ExamList
+              id={exam._id}
+              title={exam.title}
+              description={exam.description}
+              createdAt={exam.createdAt}
+              type={exam.type}
+            />
           </ListGroup.Item>
-          <ListGroup.Item>
-            <ListGroup horizontal className="border-0">
-              <ListGroup.Item className="border-0">
-                Pulmonology of {"Medicine"} Faculty {"(Midterm)"} Starts On:{" "}
-                {"(21.12.29)"}
-              </ListGroup.Item>
-              <ListGroup.Item className="border-0">
-                {["warning", "warning", "warning", "warning", "dark"].map(
-                  value => {
-                    return (
-                      <FontAwesomeIcon
-                        icon={"star"}
-                        size="xs"
-                        className={"text-" + value + " mr-1"}
-                      />
-                    );
-                  }
-                )}
-              </ListGroup.Item>
-            </ListGroup>
-          </ListGroup.Item>
-          <ListGroup.Item>
-            <ListGroup horizontal className="border-0">
-              <ListGroup.Item className="border-0">
-                Pulmonology of {"Medicine"} Faculty {"(Midterm)"} Starts On:{" "}
-                {"(21.12.29)"}
-              </ListGroup.Item>
-              <ListGroup.Item className="border-0">
-                {["warning", "warning", "warning", "warning", "dark"].map(
-                  value => {
-                    return (
-                      <FontAwesomeIcon
-                        icon={"star"}
-                        size="xs"
-                        className={"text-" + value + " mr-1"}
-                      />
-                    );
-                  }
-                )}
-              </ListGroup.Item>
-            </ListGroup>
-          </ListGroup.Item>
-        </ListGroup>
-      </BigCard>
-    );
-  }
-}
+        ))}
+      </ListGroup>
+    </BigCard>
+  );
+};
 
 export default ExamsFeaturedCard;

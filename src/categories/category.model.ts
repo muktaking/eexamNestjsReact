@@ -14,17 +14,18 @@ export const CategorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    maxlength: 25
+    maxlength: 25,
+    ref: "Exam",
   },
   slug: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   description: {
     type: String,
     required: true,
-    maxlength: 300
+    maxlength: 300,
   },
   parentId: { type: mongoose.SchemaTypes.ObjectId, default: null },
 
@@ -32,6 +33,6 @@ export const CategorySchema = new mongoose.Schema({
 
   order: {
     type: Number,
-    default: 1000
-  }
+    default: 1000,
+  },
 });

@@ -31,4 +31,16 @@ export class PostexamsController {
       req.user
     );
   }
+
+  @Post("free")
+  @UsePipes(ValidationPipe)
+  async postExamTaskingForFree(
+    @Body() getAnswersDto: GetAnswersDto,
+    @Body("answers", AnswerValidationPipe) answers: StudentAnswer[]
+  ) {
+    return await this.postexamsService.postExamTaskingForFree(
+      getAnswersDto,
+      answers
+    );
+  }
 }

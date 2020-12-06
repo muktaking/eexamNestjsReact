@@ -32,7 +32,13 @@ export const ExamSchema = new mongoose.Schema({
     enum: [0, 1, 2, 3, 4, 5],
     required: true,
   },
-  categoryType: { type: [String], required: true },
+  categoryType: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Category",
+    },
+  ],
   description: { type: String, required: true },
   questions: {
     type: [mongoose.SchemaTypes.ObjectId],

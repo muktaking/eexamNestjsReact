@@ -28,8 +28,8 @@ class Sidebar extends Component {
     super(props);
   }
   classes = {
-    sideNav: ["flex-column", "mt-4"].join(" "),
-    sideNavLink: ["text-white", "p-3", "mb-2"].join(" "),
+    sideNav: ["flex-column", "mt-2"].join(" "),
+    sideNavLink: ["text-white", "p-1", "mb-2"].join(" "),
     fa: ["text-light", "fa-lg", "mr-3"].join(" "),
   };
 
@@ -106,14 +106,7 @@ class Sidebar extends Component {
     }
 
     return (
-      <div className="px-4">
-        <Navbar.Brand
-          href="#home"
-          className="text-white d-block mx-auto text-center py-3 mb-4 bottom-border"
-        >
-          E-Exam
-        </Navbar.Brand>
-        <h3 className="text-white text-center">Welcome Back</h3>
+      <div style={styles}>
         <div className="bottom-border pb-3">
           <Image
             src={avatar}
@@ -141,6 +134,31 @@ class Sidebar extends Component {
               </NavLink>
             </Nav.Item>
           ))}
+          <div className="hideInMd">
+            <SearchForm
+              formControl={classes.formControl}
+              searchBtn={classes.searchBtn}
+            />
+            <Nav.Item
+              className="ml-md-auto"
+              // onClick={() => {
+              //   props.onlogoutLoader();
+              //   props.history.push({ pathname: "/" });
+              // }}
+            >
+              <NavLink
+                // href={"/" + value}
+                to={{ pathname: "/logout" }}
+                className="nav-link"
+              >
+                <FontAwesomeIcon
+                  icon="sign-out-alt"
+                  size="lg"
+                  className="text-danger"
+                />
+              </NavLink>
+            </Nav.Item>
+          </div>
         </Nav>
       </div>
     );
@@ -167,4 +185,8 @@ export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
 const classes = {
   formControl: "search-input",
   searchBtn: "search-button",
+};
+
+const styles = {
+  fontSize: "14px",
 };

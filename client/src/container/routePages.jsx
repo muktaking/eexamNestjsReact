@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import Landing from "./landing/landing";
 import Signup from "./registration/signup";
 import Login from "./registration/login";
-import InnerContent from ".";
+import InnerContent from "./layout";
 import NotFoundPage from "./404";
 import LogoutPage from "./registration/logout";
 
@@ -17,6 +17,9 @@ const RoutePages = (props) => {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
+      <Route path="/free" exact component={InnerContent} />
+      <Route path="/free/:id" component={InnerContent} />
+      <Route path="/result" component={InnerContent} />
       <Route path="/" exact component={Landing} />
       <Route component={NotFoundPage} />
     </Switch>
